@@ -71,3 +71,9 @@ Append one dated entry for every material setup, experiment, result, or blocker.
 - Added exact environment, data, smoke-run, pilot, matrix, evaluation, and stop instructions in the GPU runbook.
 - Recorded analytical trainable MACs, peak allocated VRAM, and measured median inference-batch latency in run artifacts.
 - GPU execution remains intentionally pending; no model weights, COCO images, Ref-Adv-s images, or training runs were started locally.
+
+## 2026-08-12 — GPU-free goal completed
+
+- Re-ran the focused CPU invariant check and a synthetic three-seed paired image-clustered analysis fixture successfully.
+- Audited every readiness decision as resolved and separated locally verified work from GPU-only pending evidence.
+- Verified local `main` and GitHub `origin/main` matched before the final audit commit.

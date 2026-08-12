@@ -59,6 +59,8 @@ These are primarily **types of expressions within each dataset**, not four separ
 
 The exact deterministic assignment and audit procedure are in the [task taxonomy](task-taxonomy.md).
 
+There is also a fifth analysis-only `unclassified` bucket for longer expressions that the conservative rules cannot label reliably. It is an abstention, not another visual task type, so it is omitted from the four-panel illustration and excluded from the confirmatory direct-versus-logical comparison.
+
 | Dataset | What its examples tend to test | How we use it |
 | --- | --- | --- |
 | RefCOCOg | Longer descriptions and more composition | Main study and complete depth sweep |
