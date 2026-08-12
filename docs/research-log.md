@@ -8,3 +8,12 @@ Append sources, claims, and limits. Do not turn hypotheses into conclusions.
 - **MDETR (2021):** end-to-end text-conditioned detection with full Transformer fusion.
 - **ReCLIP (2022):** frozen CLIP can score candidate regions zero-shot but has weak spatial reasoning without extra resolution logic.
 - **When Can Transformers Ground and Compose (2022):** attention-only grounding succeeds on synthetic compositional scenes, leaving real-image frozen-VLM grounding as the useful test.
+
+## 2026-08-12 — Attention-only retrieval hypothesis and direct precedents
+
+- **Needle (2026):** a 26M attention-only model for single-shot tool calling; frames the task as retrieval-and-assembly from supplied context.
+- **A Controlled Study of Attention-Only Transformers (2026):** matched attention-only models approach standard models when answers are context-grounded, while the remaining deficit concentrates in parametric recall.
+- **Your Large Vision-Language Model Only Needs A Few Attention Heads For Visual Grounding (CVPR 2025):** three frozen LVLM attention heads yield competitive training-free grounding. This rules out novelty claims based only on extracting an attention heatmap.
+- **F-LMM (CVPR 2025):** frozen LMM word-pixel attention maps are useful grounding priors, but a CNN and SAM refiner turn them into masks.
+
+Implication: test the unmeasured visual boundary—retrieval-style references versus relational, counting, and compositional references—using a controlled FFN ablation.

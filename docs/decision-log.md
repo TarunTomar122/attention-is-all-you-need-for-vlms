@@ -8,3 +8,9 @@ Append dated decisions here; include the evidence and what would change the deci
 - **Why:** Continuous robot action generation overloads an attention-only expert. Referring-expression grounding directly tests contextual selection over real images.
 - **Initial benchmark:** RefCOCO; report accuracy at IoU >= 0.5 and break out relational expressions.
 - **Revisit when:** A literature review finds an identical frozen-VLM, real-image, matched-decoder ablation.
+
+## 2026-08-12 — Study the retrieval–reasoning boundary, not a new heatmap method
+
+- **Decision:** Evaluate matched standard and FFN-free grounding decoders to identify which visual-language reference types attention-only decoding handles, and where it fails.
+- **Why:** Direct attention-map grounding is already established. Recent attention-only tool-calling work motivates the hypothesis that attention succeeds when the answer is retrievable from supplied context.
+- **Revisit when:** A prior controlled study already measures this boundary on real-image visual grounding.
