@@ -52,3 +52,9 @@ Append one dated entry for every material setup, experiment, result, or blocker.
 
 - Locked the confirmatory model pair, practical margins, metrics, clustered paired bootstrap, interpretation gates, and test-access boundary.
 - Predeclared how the parameter-matched `A8` control changes the conclusion.
+
+## 2026-08-12 — Core tensor path validated on CPU
+
+- Implemented FFN-free and standard one-query decoders, paired initialization, area-weighted targets, deterministic box conversion, metrics, and the frozen lexical taxonomy.
+- Passed one focused CPU check covering distributions, padding masks, final-FFN gradients, FFN absence, target geometry, box bounds, metrics, and the `A8`/`S4` parameter match.
+- No model or dataset download used.
