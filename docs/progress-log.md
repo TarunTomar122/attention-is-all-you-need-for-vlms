@@ -121,3 +121,10 @@ Append one dated entry for every material setup, experiment, result, or blocker.
 - At mass `0.8`, validation metrics were `A4`: IoU@0.5 `0.5425`, mean IoU `0.4867`, pointing `0.7904`; `S4`: IoU@0.5 `0.5421`, mean IoU `0.4866`, pointing `0.7864`.
 - The direct/relational/logical IoU@0.5 slices for `A4` were `0.5716/0.5102/0.4726`; for `S4`, `0.5688/0.5192/0.4527`. These are validation diagnostics, not confirmatory test claims.
 - Generated a held-out validation visual audit at `runs/visuals/validation-a4-s4-m08.png` showing target, A4, and S4 boxes for direct, relational, and logical examples. Test data remains untouched.
+
+## 2026-08-12 — GPU safely stopped for the night
+
+- Seed-1 and seed-2 A4 jobs reached and saved immutable `best.pt` checkpoints before the one-hour cutoff; their paired S4 jobs had not yet produced final checkpoints.
+- The partial seed checkpoints are preserved on the pod for tomorrow, but are not treated as completed runs or used for test claims.
+- Interrupted both training sessions cleanly, verified no training tmux sessions remained, and confirmed GPU utilization returned to `0%` with `1 MiB` allocated.
+- No further jobs were launched after the cutoff. Tomorrow resumes from the preserved checkpoints only if run metadata and update state are verified; otherwise the affected pairs restart in fresh immutable directories.

@@ -45,3 +45,9 @@ ok: paired image-clustered analysis fixture
 ```
 
 The current audit records both local readiness and the bounded GPU evidence gathered so far; final test claims remain blocked until the locked evaluation protocol is completed.
+
+## Day-one stop state
+
+- Completed: seed-0 held-out A4/S4 test, modality shuffles, uniform and position-prior controls, and pushed summary logs.
+- Partial: seed-1 and seed-2 A4 checkpoints exist on the persistent pod; paired S4 checkpoints and held-out exports remain pending.
+- Safe stop: training sessions were interrupted at the planned cutoff and the GPU is idle. No partial checkpoint is considered a final result.
