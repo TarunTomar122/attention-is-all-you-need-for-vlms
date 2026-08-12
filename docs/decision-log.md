@@ -72,3 +72,10 @@ Append dated decisions here; include the evidence and what would change the deci
 - **Evidence:** At the frozen mass `0.8`, `A4` and `S4` had nearly identical validation IoU@0.5 (`0.5425` vs `0.5421`) and mean IoU (`0.4867` vs `0.4866`).
 - **Limit:** One seed and validation data cannot establish the main claim; seeds 1–2, controls, and image-clustered test analysis remain required.
 - **Revisit when:** Paired test results or interpretation gates contradict this validation pattern.
+
+## 2026-08-12 — Seed-0 held-out gates pass; continue replication
+
+- **Decision:** Continue with paired seeds 1 and 2 on RefCOCOg before expanding to the wider dataset matrix.
+- **Evidence:** On the frozen RefCOCOg test mass `0.8`, A4 reached IoU@0.5 `0.5468` and S4 `0.5404`. Text shuffling reduced A4/S4 to `0.3310/0.3277`; image shuffling reduced them to `0.0627/0.0624`. Uniform and position-prior baselines were `0.0760/0.1071`.
+- **Interpretation:** Both decoders use image and text information and beat fixed priors. The A4–S4 difference is not yet a claim; three seeds and clustered analysis remain required.
+- **Operational note:** Singleton category groups are preserved unchanged in shuffle controls rather than aborting the full diagnostic.

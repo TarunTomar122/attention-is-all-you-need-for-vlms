@@ -98,6 +98,14 @@ Append one dated entry for every material setup, experiment, result, or blocker.
 - Started the first full-budget paired comparison on RunPod: SigLIP 2, RefCOCOg UMD, seed 0, `A4` versus `S4`, learning rate `3e-4`, 5,000 updates, global batch 64.
 - Runs are isolated in separate tmux windows and immutable output directories: `runs/refcocog-siglip2-A4-s0` and `runs/refcocog-siglip2-S4-s0`.
 - Validation runs every 500 updates; logs are streamed with unbuffered output and best checkpoints are written atomically. The pair is the first go/no-go check before seeds 1 and 2 or the wider matrix.
+
+## 2026-08-12 — Seed-0 held-out evaluation and controls completed
+
+- Evaluated the immutable A4/S4 checkpoints on all 9,602 RefCOCOg UMD test expressions at frozen mass `0.8`.
+- Correct-pair metrics were A4/S4 IoU@0.5 `0.5468/0.5404`, mean IoU `0.4919/0.4888`, and pointing `0.7994/0.7964`.
+- Modality controls completed: text-shuffle `0.3310/0.3277` and image-shuffle `0.0627/0.0624` IoU@0.5 for A4/S4. Uniform and position-prior baselines were `0.0760` and `0.1071`.
+- Fixed the shuffle runner to preserve singleton category groups; the focused CPU invariant test still passes. No test threshold or taxonomy was changed.
+- Launched the locked full-budget A4/S4 paired replications for seeds 1 and 2 in persistent tmux sessions. The wider dataset matrix remains gated on the three-seed result.
 - Resource guard: both processes share the RTX A5000 only after the pilot showed about 1.3 GiB peak allocated VRAM per run; the initial health check found no crash or memory pressure.
 
 ## 2026-08-12 — Primary pair passed the first checkpoint
