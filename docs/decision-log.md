@@ -58,3 +58,17 @@ Append dated decisions here; include the evidence and what would change the deci
 - **Why:** This preserves the primary causal comparison while limiting GPU spend until the short pilot's near-tie survives the real training budget.
 - **Operational contract:** Use the shared `3e-4` rate, identical data/order settings, validation every 500 updates, separate immutable output directories, and persistent unbuffered logs. Stop for non-finite loss, OOM, manifest mismatch, or a missing modality signal.
 - **Revisit when:** Both checkpoints and validation summaries are complete; then inspect the A4/S4 accuracy and resource results before authorizing the wider matrix.
+
+## 2026-08-12 — Freeze validation box mass at `0.8`
+
+- **Decision:** Use heatmap mass `0.8` for subsequent predictions in this study.
+- **Evidence:** The predeclared `S4` RefCOCOg validation selection compared `{0.5, 0.6, 0.7, 0.8, 0.9}` and selected `0.8` with IoU@0.5 `0.5421`.
+- **Scope:** This is a single validation-derived post-processing choice; it is frozen before any test evaluation and applies to both decoder variants.
+- **Revisit when:** Only if the protocol changes before test access; do not retune on test or OOD data.
+
+## 2026-08-12 — Seed-0 validation does not show an immediate FFN gap
+
+- **Decision:** Proceed to the locked held-out evaluation rather than redrawing the architecture.
+- **Evidence:** At the frozen mass `0.8`, `A4` and `S4` had nearly identical validation IoU@0.5 (`0.5425` vs `0.5421`) and mean IoU (`0.4867` vs `0.4866`).
+- **Limit:** One seed and validation data cannot establish the main claim; seeds 1–2, controls, and image-clustered test analysis remain required.
+- **Revisit when:** Paired test results or interpretation gates contradict this validation pattern.

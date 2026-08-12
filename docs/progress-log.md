@@ -105,3 +105,11 @@ Append one dated entry for every material setup, experiment, result, or blocker.
 - Both seed-0 runs reached update 500 and wrote atomic `best.pt` checkpoints without errors: `A4` validation loss `5.8121`, `S4` validation loss `5.8176`.
 - At confirmation, combined VRAM was about 3.5 GiB of 24 GiB and GPU utilization was 32%; both processes remained active in tmux.
 - The pair is safe to leave unattended until the 5,000-update summaries are available; no interpretation is made from this intermediate checkpoint.
+
+## 2026-08-12 — Primary seed-0 pair and validation audit completed
+
+- Completed the full 5,000-update RefCOCOg seed-0 pair. Final validation losses were `A4` `5.4772` and `S4` `5.4743`.
+- Selected the single heatmap-to-box mass `0.8` from `S4` validation (`IoU@0.5 = 0.5421` at the selected mass; candidate masses `0.5/0.6/0.7/0.8/0.9` were evaluated without test access).
+- At mass `0.8`, validation metrics were `A4`: IoU@0.5 `0.5425`, mean IoU `0.4867`, pointing `0.7904`; `S4`: IoU@0.5 `0.5421`, mean IoU `0.4866`, pointing `0.7864`.
+- The direct/relational/logical IoU@0.5 slices for `A4` were `0.5716/0.5102/0.4726`; for `S4`, `0.5688/0.5192/0.4527`. These are validation diagnostics, not confirmatory test claims.
+- Generated a held-out validation visual audit at `runs/visuals/validation-a4-s4-m08.png` showing target, A4, and S4 boxes for direct, relational, and logical examples. Test data remains untouched.
