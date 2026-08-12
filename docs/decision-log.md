@@ -38,3 +38,9 @@ Append dated decisions here; include the evidence and what would change the deci
 - **Decision:** Keep data normalization, model logic, training/evaluation, baselines, threshold selection, and confirmatory analysis as small explicit scripts that refuse to overwrite outputs.
 - **Why:** Every required comparison is reproducible without a framework, configuration hierarchy, or experiment service; immutable run directories protect evidence.
 - **Revisit when:** The smoke run demonstrates a concrete missing capability such as resumable multi-hour jobs or distributed training.
+
+## 2026-08-12 — Extract COCO on the pod system disk
+
+- **Decision:** Keep the checksum-verified COCO archive, model cache, repository, and run artifacts on persistent `/workspace`, but extract the current pod's 82,783 image files under `/root/attention-vlm-data`.
+- **Why:** RunPod's network filesystem made small-file extraction pathologically slow; local extraction completed quickly and still leaves 6.7 GB free.
+- **Revisit when:** The pod is replaced, the system disk is resized, or persistent random image access proves fast enough.

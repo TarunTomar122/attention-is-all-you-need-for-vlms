@@ -77,3 +77,10 @@ Append one dated entry for every material setup, experiment, result, or blocker.
 - Re-ran the focused CPU invariant check and a synthetic three-seed paired image-clustered analysis fixture successfully.
 - Audited every readiness decision as resolved and separated locally verified work from GPU-only pending evidence.
 - Verified local `main` and GitHub `origin/main` matched before the final audit commit.
+
+## 2026-08-12 — RunPod GPU smoke passed
+
+- Cloned commit `9f7017a` on an RTX A5000 (24 GB), using PyTorch 2.4.1+cu124 and the pinned SigLIP 2 revision.
+- Verified all 82,783 COCO train2014 images and generated canonical RefCOCOg manifests: 80,512 train, 4,896 validation, and 9,602 test examples.
+- Ran the real `A4` attention-only decoder for two optimizer updates at effective batch size 64; validation loss decreased from 6.2281 to 6.2261.
+- Saved immutable metadata, summary, and checkpoint artifacts; peak allocated VRAM was 1.28 GiB and trainable parameters were 2,639,104.
