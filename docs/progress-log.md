@@ -29,3 +29,9 @@ Append one dated entry for every material setup, experiment, result, or blocker.
 
 - Locked tensor shapes, decoder operations, attention readout, supervision, box conversion, and implementation invariants.
 - Kept the output pathway identical across FFN and FFN-free variants.
+
+## 2026-08-12 — Control matrix resolved
+
+- Locked the primary causal, parameter-matched, depth, retrieval, and modality controls.
+- Predeclared paired seeds and a shared bounded learning-rate pilot.
+- Parameter and compute estimates remain implementation assertions that must be verified locally before training.

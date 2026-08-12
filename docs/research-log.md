@@ -39,3 +39,10 @@ Implication: test the unmeasured visual boundary—retrieval-style references ve
 - Both variants carry one grounding query through repeated text and image cross-attention; only the standard variant includes token-wise FFNs.
 - Added an independent final attention readout so the final standard FFN causally influences the heatmap.
 - Locked area-overlap patch supervision and a shared deterministic heatmap-to-box conversion. Full specification: [architecture.md](architecture.md).
+
+## 2026-08-12 — Fair controls locked
+
+- `S4` versus `A4` isolates in-place FFN deletion at fixed depth and width.
+- With one grounding query, same-depth FFN removal halves decoder-block parameters while changing theoretical block MACs by only about 0.6%.
+- `A8` reallocates the removed parameter budget into attention depth and matches `S4` total trainable parameters within about 0.2%.
+- Added paired seeds, attention-depth sweeps, direct retrieval, position-prior, uniform, text-shuffle, and image-shuffle controls. Full matrix: [controls.md](controls.md).

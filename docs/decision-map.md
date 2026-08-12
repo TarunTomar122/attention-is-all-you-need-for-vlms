@@ -52,7 +52,7 @@ Which depth-, parameter-, and compute-matched comparisons are necessary to separ
 
 ### Answer
 
-Unresolved.
+Resolved. `S4` versus `A4` is the same-depth causal ablation and is already approximately compute-matched because FFNs process only one query. `A8` reallocates the removed FFN parameters into attention depth and matches `S4` trainable parameters within about 0.2%. Depth sweeps and non-trained modality controls complete the matrix. See [controls.md](controls.md).
 
 ## #5: Which datasets answer which part of the question?
 
