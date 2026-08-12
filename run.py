@@ -150,7 +150,8 @@ def encode(backbone, processor, records: list[dict], device: torch.device) -> tu
     max_length = int(backbone.config.text_config.max_position_embeddings)
     text_inputs = processor.tokenizer(
         [record["expression"] for record in records], padding="max_length",
-        truncation=True, max_length=max_length, return_tensors="pt",
+        truncation=True, max_length=max_length, return_attention_mask=True,
+        return_tensors="pt",
     )
     pixel_values = image_inputs["pixel_values"].to(
         device=device, dtype=next(backbone.parameters()).dtype,
