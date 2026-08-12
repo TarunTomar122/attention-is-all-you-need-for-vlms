@@ -44,3 +44,10 @@ Append dated decisions here; include the evidence and what would change the deci
 - **Decision:** Keep the checksum-verified COCO archive, model cache, repository, and run artifacts on persistent `/workspace`, but extract the current pod's 82,783 image files under `/root/attention-vlm-data`.
 - **Why:** RunPod's network filesystem made small-file extraction pathologically slow; local extraction completed quickly and still leaves 6.7 GB free.
 - **Revisit when:** The pod is replaced, the system disk is resized, or persistent random image access proves fast enough.
+
+## 2026-08-12 — Carry `3e-4` into the next experiment provisionally
+
+- **Decision:** Use learning rate `3e-4` for the next matched decoder comparison, subject to the planned research checkpoint.
+- **Evidence:** In the six-run, 500-update pilot, the paired mean validation loss was `5.8088` at `3e-4`, versus `5.8785` at `1e-4` and `5.8328` at `1e-3`.
+- **Scope:** This selects an efficient starting setting for the current frozen SigLIP2/RefCOCOg pipeline; it does not establish final accuracy or universal optimizer behavior.
+- **Revisit when:** A longer pilot, changed batch/data pipeline, unfrozen backbone, or final held-out evaluation provides evidence that the setting should change.

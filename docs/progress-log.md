@@ -84,3 +84,11 @@ Append one dated entry for every material setup, experiment, result, or blocker.
 - Verified all 82,783 COCO train2014 images and generated canonical RefCOCOg manifests: 80,512 train, 4,896 validation, and 9,602 test examples.
 - Ran the real `A4` attention-only decoder for two optimizer updates at effective batch size 64; validation loss decreased from 6.2281 to 6.2261.
 - Saved immutable metadata, summary, and checkpoint artifacts; peak allocated VRAM was 1.28 GiB and trainable parameters were 2,639,104.
+
+## 2026-08-12 — RunPod learning-rate pilot completed
+
+- Completed all six fixed-budget runs on the RTX A5000: `A4` and `S4` at `1e-4`, `3e-4`, and `1e-3`, each for 500 updates with seed 0.
+- Best validation losses were: `A4/S4 @ 1e-4` = `5.8823/5.8747`; `A4/S4 @ 3e-4` = `5.8074/5.8102`; `A4/S4 @ 1e-3` = `5.8103/5.8552`.
+- The mean across variants was lowest at `3e-4` (`5.8088`); all six immutable checkpoints and summaries were verified on the pod.
+- No OOM, crash, or stalled process occurred. Peak allocated VRAM remained about 1.3 GiB for `A4` and 1.3 GiB for `S4`; the GPU was adequate for this frozen-backbone pilot.
+- This is a provisional optimizer selection from a short loss-only pilot, not final grounding accuracy or a benchmark result.
