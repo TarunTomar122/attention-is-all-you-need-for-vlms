@@ -1,6 +1,6 @@
 # GPU-readiness completion audit
 
-Status: ready for the first bounded CUDA smoke run
+Status: primary seed-0 full-budget pair in progress
 
 ## Complete and locally verified
 
@@ -22,11 +22,17 @@ Status: ready for the first bounded CUDA smoke run
 
 - clean-environment installation on Ubuntu/CUDA;
 - pinned backbone weight download and exact 576-patch assertion;
-- CUDA forward/backward smoke run;
-- actual batch-32 memory fit and measured latency;
-- learning-rate pilot and all training results;
+- final full-matrix training results and measured latency;
 - validation selection of heatmap mass;
 - in-domain, control, OOD, and replication results.
+
+## Completed GPU evidence
+
+- RunPod environment verified on an RTX A5000 with PyTorch 2.4.1+cu124 and the pinned SigLIP 2 revision.
+- All 82,783 COCO train2014 images and the RefCOCOg train/validation manifests were prepared and verified on the pod.
+- CUDA smoke run completed with finite loss, checkpoint metadata, and 1.28 GiB peak allocated VRAM.
+- Six-run learning-rate pilot completed; `3e-4` had the lowest paired mean validation loss (`5.8088`).
+- The next full-budget `A4`/`S4` seed-0 pair is currently running; its completion remains unverified.
 
 These are execution results, not unresolved design choices. The first GPU action must be the bounded smoke run in the runbook. Any required deviation is logged and pushed before continuing.
 
@@ -37,4 +43,4 @@ ok: taxonomy, data normalization, decoder, masks, gradients, geometry, and param
 ok: paired image-clustered analysis fixture
 ```
 
-No model weights, COCO images, Ref-Adv-s images, training run, or rented GPU resource was used.
+The current audit records both local readiness and the bounded GPU evidence gathered so far; final test claims remain blocked until the locked evaluation protocol is completed.

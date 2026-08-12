@@ -92,3 +92,10 @@ Append one dated entry for every material setup, experiment, result, or blocker.
 - The mean across variants was lowest at `3e-4` (`5.8088`); all six immutable checkpoints and summaries were verified on the pod.
 - No OOM, crash, or stalled process occurred. Peak allocated VRAM remained about 1.3 GiB for `A4` and 1.3 GiB for `S4`; the GPU was adequate for this frozen-backbone pilot.
 - This is a provisional optimizer selection from a short loss-only pilot, not final grounding accuracy or a benchmark result.
+
+## 2026-08-12 — Primary seed-0 pair launched
+
+- Started the first full-budget paired comparison on RunPod: SigLIP 2, RefCOCOg UMD, seed 0, `A4` versus `S4`, learning rate `3e-4`, 5,000 updates, global batch 64.
+- Runs are isolated in separate tmux windows and immutable output directories: `runs/refcocog-siglip2-A4-s0` and `runs/refcocog-siglip2-S4-s0`.
+- Validation runs every 500 updates; logs are streamed with unbuffered output and best checkpoints are written atomically. The pair is the first go/no-go check before seeds 1 and 2 or the wider matrix.
+- Resource guard: both processes share the RTX A5000 only after the pilot showed about 1.3 GiB peak allocated VRAM per run; the initial health check found no crash or memory pressure.

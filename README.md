@@ -25,4 +25,4 @@ python3 test_study.py
 
 When a GPU is available, follow the [GPU runbook](docs/gpu-runbook.md) from bootstrap through the first bounded smoke run.
 
-Current state: [GPU-ready, with GPU-only evidence explicitly pending](docs/completion-audit.md).
+Current state: CUDA smoke and the six-run learning-rate pilot are complete. The first full-budget `A4`/`S4` seed-0 pair is running; see the [progress log](docs/progress-log.md) and [GPU audit](docs/completion-audit.md).

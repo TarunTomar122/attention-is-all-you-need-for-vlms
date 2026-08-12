@@ -51,3 +51,10 @@ Append dated decisions here; include the evidence and what would change the deci
 - **Evidence:** In the six-run, 500-update pilot, the paired mean validation loss was `5.8088` at `3e-4`, versus `5.8785` at `1e-4` and `5.8328` at `1e-3`.
 - **Scope:** This selects an efficient starting setting for the current frozen SigLIP2/RefCOCOg pipeline; it does not establish final accuracy or universal optimizer behavior.
 - **Revisit when:** A longer pilot, changed batch/data pipeline, unfrozen backbone, or final held-out evaluation provides evidence that the setting should change.
+
+## 2026-08-12 — Start with a paired full-budget seed-0 gate
+
+- **Decision:** Run only `A4` and `S4` at seed 0 for the full 5,000-update RefCOCOg budget before expanding to other seeds and controls.
+- **Why:** This preserves the primary causal comparison while limiting GPU spend until the short pilot's near-tie survives the real training budget.
+- **Operational contract:** Use the shared `3e-4` rate, identical data/order settings, validation every 500 updates, separate immutable output directories, and persistent unbuffered logs. Stop for non-finite loss, OOM, manifest mismatch, or a missing modality signal.
+- **Revisit when:** Both checkpoints and validation summaries are complete; then inspect the A4/S4 accuracy and resource results before authorizing the wider matrix.
