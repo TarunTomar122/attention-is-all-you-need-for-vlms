@@ -12,3 +12,9 @@ Append one dated entry for every material setup, experiment, result, or blocker.
 
 - Cloned the GitHub repository locally; GPU is now optional until training starts.
 - Locked the study framing: measure the retrieval–reasoning boundary of an FFN-free visual grounding decoder.
+
+## 2026-08-12 — GPU-free planning started
+
+- Created the canonical GPU-readiness decision map.
+- Completed a focused novelty audit and recorded the provisional research gap.
+- No model weights, large datasets, training jobs, or rented compute used.

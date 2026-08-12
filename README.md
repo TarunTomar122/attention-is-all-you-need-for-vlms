@@ -4,4 +4,4 @@ Can an attention-only grounding decoder localize a language-referred object from
 
 Initial study: characterize where an FFN-free grounding decoder succeeds or fails. Given an image and expression, predict one bounding box; compare matched standard and attention-only decoders across retrieval-style and compositional references.
 
-Project records live in [`docs/`](docs/).
+Project records live in [`docs/`](docs/). The [GPU-readiness decision map](docs/decision-map.md) tracks every choice that must be resolved before training.
