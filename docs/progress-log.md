@@ -24,3 +24,8 @@ Append one dated entry for every material setup, experiment, result, or blocker.
 - Locked the primary and replication frozen backbones with matching 24 × 24 spatial grids.
 - Verified public access, revisions, licenses where declared, and checkpoint sizes using repository metadata only.
 - No model weights downloaded.
+
+## 2026-08-12 — Decoder contract resolved
+
+- Locked tensor shapes, decoder operations, attention readout, supervision, box conversion, and implementation invariants.
+- Kept the output pathway identical across FFN and FFN-free variants.

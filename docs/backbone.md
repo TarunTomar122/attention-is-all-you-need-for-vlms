@@ -50,6 +50,12 @@ For both backbones:
 
 The project claim always applies to the **new grounding decoder**, not to the frozen backbone, whose pretrained blocks contain FFNs.
 
+## Image preprocessing contract
+
+Convert to RGB and resize the complete image directly to the backbone's fixed square input using its declared interpolation and normalization. Do not crop: a grounding experiment cannot silently remove the referred object. Scale box x- and y-coordinates independently into the square and record both scale factors for exact inversion.
+
+SigLIP 2 already declares a direct 384 × 384 resize. For the CLIP replication, disable its default center crop and resize directly to 336 × 336. This is a documented distribution shift for CLIP, shared by every CLIP decoder variant; the alternative would create missing or truncated ground-truth targets.
+
 ## Alternatives rejected
 
 - **CLIP ViT-B/16 at 224px:** cheap, but its 14 × 14 grid imposes a strong localization ceiling and changes decoder token count relative to the main model.

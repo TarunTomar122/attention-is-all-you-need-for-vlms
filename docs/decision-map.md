@@ -39,7 +39,7 @@ How do both variants produce the same localization output while differing only i
 
 ### Answer
 
-Unresolved. The final prediction should remain an attention distribution over image patches; otherwise a learned box head would confound the claim.
+Resolved. A single grounding query alternates text and image cross-attention across four blocks. The standard variant adds a 4× GELU FFN to every block; the attention-only variant deletes those FFNs. A separate shared Q/K attention readout converts the final query into the only localization prediction: a distribution over 576 patches. See [architecture.md](architecture.md).
 
 ## #4: Which controls make the FFN comparison fair?
 
