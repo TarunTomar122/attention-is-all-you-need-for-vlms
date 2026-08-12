@@ -32,7 +32,7 @@ Status: primary seed-0 full-budget pair in progress
 - All 82,783 COCO train2014 images and the RefCOCOg train/validation manifests were prepared and verified on the pod.
 - CUDA smoke run completed with finite loss, checkpoint metadata, and 1.28 GiB peak allocated VRAM.
 - Six-run learning-rate pilot completed; `3e-4` had the lowest paired mean validation loss (`5.8088`).
-- The next full-budget `A4`/`S4` seed-0 pair is currently running; its completion remains unverified.
+- The next full-budget `A4`/`S4` seed-0 pair is currently running; both passed update 500 and wrote checkpoints, while final completion remains unverified.
 
 These are execution results, not unresolved design choices. The first GPU action must be the bounded smoke run in the runbook. Any required deviation is logged and pushed before continuing.
 

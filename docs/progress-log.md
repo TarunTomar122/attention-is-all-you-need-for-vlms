@@ -99,3 +99,9 @@ Append one dated entry for every material setup, experiment, result, or blocker.
 - Runs are isolated in separate tmux windows and immutable output directories: `runs/refcocog-siglip2-A4-s0` and `runs/refcocog-siglip2-S4-s0`.
 - Validation runs every 500 updates; logs are streamed with unbuffered output and best checkpoints are written atomically. The pair is the first go/no-go check before seeds 1 and 2 or the wider matrix.
 - Resource guard: both processes share the RTX A5000 only after the pilot showed about 1.3 GiB peak allocated VRAM per run; the initial health check found no crash or memory pressure.
+
+## 2026-08-12 — Primary pair passed the first checkpoint
+
+- Both seed-0 runs reached update 500 and wrote atomic `best.pt` checkpoints without errors: `A4` validation loss `5.8121`, `S4` validation loss `5.8176`.
+- At confirmation, combined VRAM was about 3.5 GiB of 24 GiB and GPU utilization was 32%; both processes remained active in tmux.
+- The pair is safe to leave unattended until the 5,000-update summaries are available; no interpretation is made from this intermediate checkpoint.
