@@ -65,7 +65,7 @@ Which official splits support training, shortcut-resistant evaluation, long expr
 
 ### Answer
 
-Unresolved. Current candidates: RefCOCO, RefCOCO+, RefCOCOg, and Ref-Adv. Dataset availability and annotation schemas must be verified before locking them.
+Resolved. RefCOCOg UMD carries the full study; RefCOCO+ UNC and RefCOCO UNC carry the core replication; each is trained separately. Ref-Adv-s is a locked, test-only OOD benchmark for RefCOCOg-trained models. Official schemas, expression counts, archived annotation checksums, split isolation, and loader invariants are recorded in [datasets.md](datasets.md).
 
 ## #6: How are task types assigned before results are seen?
 

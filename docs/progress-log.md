@@ -35,3 +35,9 @@ Append one dated entry for every material setup, experiment, result, or blocker.
 - Locked the primary causal, parameter-matched, depth, retrieval, and modality controls.
 - Predeclared paired seeds and a shared bounded learning-rate pilot.
 - Parameter and compute estimates remain implementation assertions that must be verified locally before training.
+
+## 2026-08-12 — Datasets and splits resolved
+
+- Locked training, validation, in-domain test, and OOD test roles.
+- Inspected 156 MB of official classic annotation archives, recorded SHA-256 hashes, and removed the temporary copies.
+- No COCO images or Ref-Adv image data downloaded.

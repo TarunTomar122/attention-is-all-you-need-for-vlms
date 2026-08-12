@@ -46,3 +46,10 @@ Implication: test the unmeasured visual boundary—retrieval-style references ve
 - With one grounding query, same-depth FFN removal halves decoder-block parameters while changing theoretical block MACs by only about 0.6%.
 - `A8` reallocates the removed parameter budget into attention depth and matches `S4` total trainable parameters within about 0.2%.
 - Added paired seeds, attention-depth sweeps, direct retrieval, position-prior, uniform, text-shuffle, and image-shuffle controls. Full matrix: [controls.md](controls.md).
+
+## 2026-08-12 — Dataset protocol locked
+
+- Made RefCOCOg UMD the primary full-matrix dataset; its official split is image-disjoint and contains longer expressions.
+- Assigned RefCOCO+ UNC and RefCOCO UNC to core same-backbone replications, with separate training to prevent cross-dataset image leakage.
+- Verified all classic annotation archives, schemas, expression counts, and checksums without downloading COCO images.
+- Confirmed Ref-Adv-s is a public 1,142-case subset with included images; despite its packaging split name, it is locked as OOD test-only data. Full protocol: [datasets.md](datasets.md).

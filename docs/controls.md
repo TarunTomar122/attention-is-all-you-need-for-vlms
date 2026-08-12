@@ -43,7 +43,7 @@ Record analytical MACs, peak allocated VRAM, and median inference latency after 
 
 ## Depth and retrieval controls
 
-Primary SigLIP 2 matrix, each with seeds `{0, 1, 2}`:
+Primary SigLIP 2 matrix on RefCOCOg UMD, each with seeds `{0, 1, 2}`:
 
 | ID | Purpose |
 | --- | --- |
@@ -52,13 +52,13 @@ Primary SigLIP 2 matrix, each with seeds `{0, 1, 2}`:
 | `S1`, `S2`, `S4` | Same-depth FFN controls. |
 | `A8` | Parameter-matched attention-only control. |
 
-CLIP replication matrix, each with seeds `{0, 1, 2}`:
+SigLIP 2 core replication matrix on RefCOCO+ UNC and RefCOCO UNC, each with seeds `{0, 1, 2}`:
 
 ```text
 D0, A4, S4, A8
 ```
 
-Run the CLIP matrix only after the complete SigLIP 2 protocol succeeds. It tests whether the direction and task-wise pattern of the FFN gap survives a backbone with different pretraining—not whether absolute accuracy matches.
+Run the same core matrix on RefCOCOg UMD with the CLIP backbone only after the complete SigLIP 2 protocol succeeds. It tests whether the direction and task-wise pattern of the FFN gap survives a backbone with different pretraining—not whether absolute accuracy matches.
 
 ## Non-trained controls
 
