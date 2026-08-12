@@ -15,4 +15,4 @@ flowchart LR
     F --> G
 ```
 
-Start with the [visual guide](docs/visual-guide.md). Project records live in [`docs/`](docs/), and the [GPU-readiness decision map](docs/decision-map.md) tracks every choice that must be resolved before training.
+Start with the [visual guide](docs/visual-guide.md). The [evaluation contract](docs/evaluation.md) defines what would count as evidence before results exist. Project records live in [`docs/`](docs/), and the [GPU-readiness decision map](docs/decision-map.md) tracks every choice that must be resolved before training.

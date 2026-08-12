@@ -20,3 +20,9 @@ Append dated decisions here; include the evidence and what would change the deci
 - **Decision:** Assign fixed lexical tags and one exclusive direct, absolute, relational, or logical stratum; treat composition and length as overlays.
 - **Why:** The study needs auditable failure slices without presenting inferred latent reasoning as ground truth.
 - **Revisit when:** The training-only manual audit exposes a systematic rule failure; changes stop once validation or test expressions are loaded.
+
+## 2026-08-12 — Make the main claim conjunctive and practically bounded
+
+- **Decision:** Require direct-reference equivalence within 5 points and an at-least-5-point direct-versus-logical interaction for the main claim.
+- **Why:** A global average cannot establish where attention-only decoding works; practical margins and paired image-clustered intervals make the hypothesis falsifiable.
+- **Revisit when:** Only before test access, with a written statistical justification independent of observed model results.

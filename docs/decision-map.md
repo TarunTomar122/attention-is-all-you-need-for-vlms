@@ -91,7 +91,7 @@ Which metrics, seeds, intervals, ablations, faithfulness tests, and success thre
 
 ### Answer
 
-Unresolved.
+Resolved. The confirmatory RefCOCOg comparison requires `A4` to remain within a 5-point practical margin of `S4` on direct references and a task interaction showing at least a 5-point larger deficit on logical references. Use image-clustered paired bootstrap intervals, fixed interpretation gates, heatmap diagnostics, per-seed reporting, and descriptive replication analyses. See [evaluation.md](evaluation.md).
 
 ## #8: What must work locally before GPU rental?
 

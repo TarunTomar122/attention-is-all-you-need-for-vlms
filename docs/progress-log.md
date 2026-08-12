@@ -47,3 +47,8 @@ Append one dated entry for every material setup, experiment, result, or blocker.
 - Added diagrams for dataset records, expression types, model variants, outputs, and split isolation.
 - Locked deterministic task strata, compositional and length overlays, and a training-only manual audit protocol.
 - Passed ten dependency-free taxonomy boundary cases; no dataset or model download required.
+
+## 2026-08-12 — Evaluation contract resolved
+
+- Locked the confirmatory model pair, practical margins, metrics, clustered paired bootstrap, interpretation gates, and test-access boundary.
+- Predeclared how the parameter-matched `A8` control changes the conclusion.
