@@ -67,6 +67,7 @@ def prepare(
                 "split": split,
                 "image": str(image_path.resolve()),
                 "image_id": int(ref["image_id"]),
+                "category_id": int(ref["category_id"]),
                 "width": int(image["width"]),
                 "height": int(image["height"]),
                 "expression": expression,

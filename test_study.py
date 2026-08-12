@@ -8,7 +8,7 @@ from tempfile import TemporaryDirectory
 import torch
 
 from prepare_classic import prepare
-from run import build_decoder
+from run import Records, build_decoder
 
 from study import (
     CrossAttention, FFN, GroundingDecoder, box_target, classify_expression,
@@ -115,6 +115,7 @@ def check() -> None:
         with (root / "refs.p").open("wb") as file:
             pickle.dump([{
                 "ann_id": 9, "image_id": 7, "split": "train",
+                "category_id": 42,
                 "sentences": [{"sent_id": 11, "sent": "the red cup"}],
             }], file)
         count, digest, clamped = prepare(
@@ -124,7 +125,21 @@ def check() -> None:
         record = json.loads((root / "train.jsonl").read_text())
         assert count == 1 and len(digest) == 64 and not clamped
         assert record["id"] == "refcocog:11" and record["box_xyxy"] == [20.0, 10.0, 60.0, 50.0]
+        assert record["category_id"] == 42
         assert record["stratum"] == "direct" and record["tags"] == ["attribute"]
+        controlled = [
+            record | {"id": "a", "image_id": 1, "category_id": 42, "expression": "first", "image": "first.jpg"},
+            record | {"id": "b", "image_id": 2, "category_id": 42, "expression": "second", "image": "second.jpg"},
+        ]
+        (root / "control.jsonl").write_text(
+            "\n".join(json.dumps(item) for item in controlled) + "\n",
+        )
+        text_control = Records(root / "control.jsonl")
+        text_control.apply_control("text-shuffle")
+        assert [item["expression"] for item in text_control.items] == ["second", "first"]
+        image_control = Records(root / "control.jsonl")
+        image_control.apply_control("image-shuffle")
+        assert [item["image"] for item in image_control.items] == ["second.jpg", "first.jpg"]
     print("ok: taxonomy, data normalization, decoder, masks, gradients, geometry, and parameter match")
 
 

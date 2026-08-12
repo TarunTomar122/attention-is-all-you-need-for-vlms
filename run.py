@@ -8,7 +8,9 @@ import json
 import math
 import platform
 import random
+import statistics
 import subprocess
+import time
 from pathlib import Path
 
 import torch
@@ -37,9 +39,11 @@ VARIANTS = {
 
 
 class Records(Dataset):
-    def __init__(self, path: Path) -> None:
+    def __init__(self, path: Path, limit: int | None = None) -> None:
         self.path = path
         self.items = [json.loads(line) for line in path.read_text().splitlines() if line]
+        if limit is not None:
+            self.items = self.items[:limit]
         if not self.items:
             raise ValueError(f"empty manifest: {path}")
 
@@ -49,9 +53,64 @@ class Records(Dataset):
     def __getitem__(self, index: int) -> dict:
         return self.items[index]
 
+    def apply_control(self, control: str) -> None:
+        if control == "correct":
+            return
+        groups: dict[int, list[int]] = {}
+        for index, item in enumerate(self.items):
+            if "category_id" not in item:
+                raise ValueError(f"{control} requires classic category_id metadata")
+            groups.setdefault(item["category_id"], []).append(index)
+        randomizer = random.Random(20260812)
+        donors: dict[int, int] = {}
+        for indices in groups.values():
+            if control == "image-shuffle":
+                by_image: dict[str, list[int]] = {}
+                for index in indices:
+                    by_image.setdefault(str(self.items[index]["image_id"]), []).append(index)
+                image_ids = sorted(by_image)
+                if len(image_ids) < 2:
+                    raise ValueError(f"cannot image-derange singleton category in {self.path}")
+                randomizer.shuffle(image_ids)
+                image_donor = {
+                    image_id: by_image[image_ids[(offset + 1) % len(image_ids)]][0]
+                    for offset, image_id in enumerate(image_ids)
+                }
+                donors.update({index: image_donor[str(self.items[index]["image_id"])] for index in indices})
+            else:
+                if len(indices) < 2:
+                    raise ValueError(f"cannot text-derange singleton category in {self.path}")
+                randomizer.shuffle(indices)
+                donors.update({index: indices[(offset + 1) % len(indices)] for offset, index in enumerate(indices)})
+        original = [item.copy() for item in self.items]
+        for index, item in enumerate(self.items):
+            donor = original[donors[index]]
+            if control == "text-shuffle":
+                item["expression"] = donor["expression"]
+            elif control == "image-shuffle":
+                item["image"] = donor["image"]
+            else:
+                raise ValueError(control)
+
 
 def manifest_hash(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def analytical_macs(variant: str, image_width: int, text_width: int, text_length: int) -> int:
+    """Approximate one-example forward MACs for trainable projections and decoder."""
+    width = 256
+    patches = 576
+    depth, with_ffn = VARIANTS[variant]
+    input_projections = patches * image_width * width + text_length * text_width * width
+    per_block = (
+        width**2 + 2 * text_length * width**2 + width**2 + 2 * text_length * width
+        + width**2 + 2 * patches * width**2 + width**2 + 2 * patches * width
+    )
+    if with_ffn:
+        per_block += 8 * width**2
+    readout = width**2 + patches * width**2 + patches * width
+    return input_projections + depth * per_block + readout
 
 
 def build_decoder(variant: str, image_width: int, text_width: int, seed: int) -> GroundingDecoder:
@@ -165,7 +224,8 @@ def train(args: argparse.Namespace) -> None:
         args.variant, backbone.config.vision_config.hidden_size,
         backbone.config.text_config.hidden_size, args.seed,
     ).to(device)
-    train_data, val_data = Records(args.train), Records(args.val)
+    train_data = Records(args.train, args.limit_train)
+    val_data = Records(args.val, args.limit_val)
     train_loader = batches(train_data, args.batch_size, shuffle=True, seed=args.seed)
     val_loader = batches(val_data, args.batch_size, shuffle=False, seed=args.seed)
     optimizer = torch.optim.AdamW(
@@ -193,6 +253,11 @@ def train(args: argparse.Namespace) -> None:
         "val_manifest_sha256": manifest_hash(args.val),
         "trainable_parameters": sum(p.numel() for p in decoder.parameters()),
         "frozen_parameters": sum(p.numel() for p in backbone.parameters()),
+        "analytical_trainable_macs_per_example": analytical_macs(
+            args.variant, backbone.config.vision_config.hidden_size,
+            backbone.config.text_config.hidden_size,
+            backbone.config.text_config.max_position_embeddings,
+        ),
         "config": config,
         "git_commit": subprocess.check_output(
             ("git", "rev-parse", "HEAD"), text=True,
@@ -204,6 +269,7 @@ def train(args: argparse.Namespace) -> None:
     }
     (args.output / "metadata.json").write_text(json.dumps(metadata, indent=2, default=str) + "\n")
     optimizer.zero_grad(set_to_none=True)
+    torch.cuda.reset_peak_memory_stats()
     update = 0
     micro_step = 0
     best_loss = math.inf
@@ -233,6 +299,10 @@ def train(args: argparse.Namespace) -> None:
                     save_checkpoint(args.output / "best.pt", decoder, metadata | {"update": update, "val_loss": val_loss})
             if update >= args.steps:
                 break
+    (args.output / "summary.json").write_text(json.dumps({
+        "best_validation_loss": best_loss,
+        "peak_allocated_vram_bytes": torch.cuda.max_memory_allocated(),
+    }, indent=2) + "\n")
 
 
 def evaluate(args: argparse.Namespace) -> None:
@@ -247,13 +317,21 @@ def evaluate(args: argparse.Namespace) -> None:
     decoder.load_state_dict(checkpoint["decoder"])
     decoder.eval()
     dataset = Records(args.data)
+    dataset.apply_control(args.control)
     heatmaps, predicted_boxes, target_boxes, image_sizes = [], [], [], []
     ids, image_ids, strata, tags, compositional, token_counts = [], [], [], [], [], []
+    latencies = []
+    torch.cuda.reset_peak_memory_stats()
     with torch.no_grad():
-        for records in batches(dataset, args.batch_size, shuffle=False, seed=checkpoint["seed"]):
+        for batch_index, records in enumerate(batches(dataset, args.batch_size, shuffle=False, seed=checkpoint["seed"])):
+            torch.cuda.synchronize()
+            started = time.perf_counter()
             image, text, mask, sizes, boxes = encode(backbone, processor, records, device)
             with torch.autocast(device_type=device.type, dtype=torch.float16, enabled=device.type == "cuda"):
                 probabilities = decoder(image, text, mask).float()
+            torch.cuda.synchronize()
+            if batch_index >= 5:
+                latencies.append(time.perf_counter() - started)
             heatmaps.append(probabilities.cpu())
             predicted_boxes.append(heatmap_box(probabilities, sizes, args.mass).cpu())
             target_boxes.append(boxes.cpu())
@@ -279,6 +357,9 @@ def evaluate(args: argparse.Namespace) -> None:
         "metrics": metrics, "mass": args.mass,
         "manifest_sha256": manifest_hash(args.data),
         "checkpoint": str(args.checkpoint.resolve()),
+        "control": args.control,
+        "median_batch_latency_seconds": statistics.median(latencies) if latencies else None,
+        "peak_allocated_vram_bytes": torch.cuda.max_memory_allocated(),
     }
     if args.output.exists():
         raise FileExistsError(f"refusing to overwrite predictions: {args.output}")
@@ -303,6 +384,8 @@ def parser() -> argparse.ArgumentParser:
     training.add_argument("--steps", type=int, default=5000)
     training.add_argument("--warmup-steps", type=int, default=250)
     training.add_argument("--eval-every", type=int, default=500)
+    training.add_argument("--limit-train", type=int)
+    training.add_argument("--limit-val", type=int)
     training.set_defaults(action=train)
     evaluation = commands.add_parser("evaluate")
     evaluation.add_argument("--checkpoint", required=True, type=Path)
@@ -310,6 +393,10 @@ def parser() -> argparse.ArgumentParser:
     evaluation.add_argument("--output", required=True, type=Path)
     evaluation.add_argument("--batch-size", type=int, default=32)
     evaluation.add_argument("--mass", type=float, required=True)
+    evaluation.add_argument(
+        "--control", choices=("correct", "text-shuffle", "image-shuffle"),
+        default="correct",
+    )
     evaluation.set_defaults(action=evaluate)
     return root
 

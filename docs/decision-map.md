@@ -104,4 +104,4 @@ What is the smallest CPU-tested implementation and exact runbook that turns GPU 
 
 ### Answer
 
-Unresolved.
+Resolved. The repository now contains deterministic preparation, decoder, training, evaluation, threshold-selection, and paired-analysis entrypoints plus one focused CPU invariant check. The [GPU runbook](gpu-runbook.md) begins with exact environment/data preparation, then a bounded CUDA smoke run, the shared learning-rate pilot, primary matrix, frozen threshold selection, test export, and confirmatory analysis.

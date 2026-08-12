@@ -64,3 +64,10 @@ Append one dated entry for every material setup, experiment, result, or blocker.
 - Checksum-verified the RefCOCOg annotation archive, sampled 40 training expressions per final stratum, and published the 200-row audit.
 - Removed broad relation and counting triggers, tightened position cues, and added an honest `unclassified` bucket for long unmatched descriptions.
 - Deleted the temporary annotation archive after the audit; no images, validation expressions, or test expressions were loaded.
+
+## 2026-08-12 — GPU execution path prepared
+
+- Added deterministic classic and Ref-Adv-s preparation, fixed-budget training, immutable checkpoint selection, raw prediction export, modality shuffles, fixed priors, mass selection, and paired image-clustered analysis.
+- Added exact environment, data, smoke-run, pilot, matrix, evaluation, and stop instructions in the GPU runbook.
+- Recorded analytical trainable MACs, peak allocated VRAM, and measured median inference-batch latency in run artifacts.
+- GPU execution remains intentionally pending; no model weights, COCO images, Ref-Adv-s images, or training runs were started locally.

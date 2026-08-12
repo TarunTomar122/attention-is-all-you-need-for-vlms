@@ -22,3 +22,5 @@ Local invariant check (no model or dataset download):
 ```bash
 python3 test_study.py
 ```
+
+When a GPU is available, follow the [GPU runbook](docs/gpu-runbook.md) from bootstrap through the first bounded smoke run.

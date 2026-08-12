@@ -32,3 +32,9 @@ Append dated decisions here; include the evidence and what would change the deci
 - **Decision:** Only unmatched expressions of eight tokens or fewer count as direct; longer unmatched text is `unclassified` and excluded from the confirmatory interaction.
 - **Why:** The frozen RefCOCOg training sample showed that long unmatched descriptions often contained relations outside a conservative lexicon.
 - **Revisit when:** Never for this study after validation/test access; future work can replace lexical rules with independently annotated facets.
+
+## 2026-08-12 — Use one minimal immutable runner
+
+- **Decision:** Keep data normalization, model logic, training/evaluation, baselines, threshold selection, and confirmatory analysis as small explicit scripts that refuse to overwrite outputs.
+- **Why:** Every required comparison is reproducible without a framework, configuration hierarchy, or experiment service; immutable run directories protect evidence.
+- **Revisit when:** The smoke run demonstrates a concrete missing capability such as resumable multi-hour jobs or distributed training.
