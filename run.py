@@ -64,13 +64,19 @@ class Records(Dataset):
         randomizer = random.Random(20260812)
         donors: dict[int, int] = {}
         for indices in groups.values():
+            if len(indices) < 2:
+                # Some held-out categories have one example; preserve it rather
+                # than aborting the entire diagnostic shuffle.
+                donors[indices[0]] = indices[0]
+                continue
             if control == "image-shuffle":
                 by_image: dict[str, list[int]] = {}
                 for index in indices:
                     by_image.setdefault(str(self.items[index]["image_id"]), []).append(index)
                 image_ids = sorted(by_image)
                 if len(image_ids) < 2:
-                    raise ValueError(f"cannot image-derange singleton category in {self.path}")
+                    donors.update({index: index for index in indices})
+                    continue
                 randomizer.shuffle(image_ids)
                 image_donor = {
                     image_id: by_image[image_ids[(offset + 1) % len(image_ids)]][0]
@@ -78,8 +84,6 @@ class Records(Dataset):
                 }
                 donors.update({index: image_donor[str(self.items[index]["image_id"])] for index in indices})
             else:
-                if len(indices) < 2:
-                    raise ValueError(f"cannot text-derange singleton category in {self.path}")
                 randomizer.shuffle(indices)
                 donors.update({index: indices[(offset + 1) % len(indices)] for offset, index in enumerate(indices)})
         original = [item.copy() for item in self.items]
