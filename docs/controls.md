@@ -79,6 +79,21 @@ These controls identify dataset position bias and models that ignore either moda
 - Keep optimizer family, weight decay, warm-up fraction, scheduler, gradient clipping, batch size, precision, and update count identical after the pilot.
 - Do not tune any hyperparameter on a test split or separately per architecture.
 
+Locked values after choosing the shared learning rate:
+
+| Setting | Value |
+| --- | --- |
+| Optimizer | AdamW, betas `(0.9, 0.999)`, epsilon `1e-8`, weight decay `0.01` |
+| Global batch | 64 expressions: device batch 32 × 2 gradient-accumulation steps |
+| Final budget | 5,000 optimizer updates |
+| Pilot budget | 500 optimizer updates |
+| Schedule | 250-update linear warm-up, then cosine decay to 10% of peak rate |
+| Gradient clipping | global norm `1.0` |
+| Precision | frozen backbone and forward autocast in FP16; targets, probabilities, and loss in FP32 |
+| Validation | every 500 final-run updates; at pilot completion |
+
+If the first measured CUDA smoke run cannot fit device batch 32, lower the device batch and increase accumulation to preserve global batch 64. Log that hardware-only change before continuing.
+
 ## Required stored metadata
 
 Each run must store:

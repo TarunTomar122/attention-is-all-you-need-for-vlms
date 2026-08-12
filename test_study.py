@@ -1,6 +1,14 @@
 """One dependency-free CPU check for the locked study invariants."""
 
+import json
+import pickle
+from pathlib import Path
+from tempfile import TemporaryDirectory
+
 import torch
+
+from prepare_classic import prepare
+from run import build_decoder
 
 from study import (
     CrossAttention, FFN, GroundingDecoder, box_target, classify_expression,
@@ -87,7 +95,34 @@ def check() -> None:
         - sum(p.numel() for p in full_attention.parameters())
     )
     assert parameter_gap / sum(p.numel() for p in full_standard.parameters()) < 0.003
-    print("ok: taxonomy, decoder, masks, gradients, targets, boxes, and parameter match")
+    paired_a4 = build_decoder("A4", 48, 24, 2)
+    paired_s4 = build_decoder("S4", 48, 24, 2)
+    paired_shared = paired_a4.state_dict()
+    for name, value in paired_s4.state_dict().items():
+        if name in paired_shared and paired_shared[name].shape == value.shape:
+            assert torch.equal(paired_shared[name], value), name
+
+    with TemporaryDirectory() as directory:
+        root = Path(directory)
+        (root / "image.jpg").touch()
+        (root / "instances.json").write_text(json.dumps({
+            "images": [{"id": 7, "file_name": "image.jpg", "width": 100, "height": 80}],
+            "annotations": [{"id": 9, "image_id": 7, "bbox": [20, 10, 40, 40]}],
+        }))
+        with (root / "refs.p").open("wb") as file:
+            pickle.dump([{
+                "ann_id": 9, "image_id": 7, "split": "train",
+                "sentences": [{"sent_id": 11, "sent": "the red cup"}],
+            }], file)
+        count, digest, clamped = prepare(
+            "refcocog", "train", root / "instances.json", root / "refs.p",
+            root, root / "train.jsonl",
+        )
+        record = json.loads((root / "train.jsonl").read_text())
+        assert count == 1 and len(digest) == 64 and not clamped
+        assert record["id"] == "refcocog:11" and record["box_xyxy"] == [20.0, 10.0, 60.0, 50.0]
+        assert record["stratum"] == "direct" and record["tags"] == ["attribute"]
+    print("ok: taxonomy, data normalization, decoder, masks, gradients, geometry, and parameter match")
 
 
 if __name__ == "__main__":
