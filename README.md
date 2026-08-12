@@ -4,4 +4,15 @@ Can an attention-only grounding decoder localize a language-referred object from
 
 Initial study: characterize where an FFN-free grounding decoder succeeds or fails. Given an image and expression, predict one bounding box; compare matched standard and attention-only decoders across retrieval-style and compositional references.
 
-Project records live in [`docs/`](docs/). The [GPU-readiness decision map](docs/decision-map.md) tracks every choice that must be resolved before training.
+```mermaid
+flowchart LR
+    A["Image + expression"] --> B["Frozen VLM features"]
+    B --> C["Attention-only decoder"]
+    B --> D["Attention + FFN decoder"]
+    C --> E["Patch heatmap → box"]
+    D --> F["Patch heatmap → box"]
+    E --> G["Compare by expression type"]
+    F --> G
+```
+
+Start with the [visual guide](docs/visual-guide.md). Project records live in [`docs/`](docs/), and the [GPU-readiness decision map](docs/decision-map.md) tracks every choice that must be resolved before training.

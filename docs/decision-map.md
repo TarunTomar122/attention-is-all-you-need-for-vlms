@@ -78,7 +78,7 @@ Can deterministic, auditable rules assign category, attribute, absolute-position
 
 ### Answer
 
-Unresolved. Prefer native benchmark facets where available; use multi-label lexical rules plus a fixed manual audit for legacy datasets.
+Resolved. Use auditable multi-label lexical tags plus four mutually exclusive strata: direct, absolute, relational, and logical. A compositional overlay captures multiple structural cues; expression length remains an independent covariate. Audit 40 RefCOCOg training examples per stratum, revise only from that audit, then freeze before validation, test, or Ref-Adv-s is loaded. Native Ref-Adv-s fields remain separate diagnostics. See [task-taxonomy.md](task-taxonomy.md).
 
 ## #7: What evidence will support or reject the hypothesis?
 

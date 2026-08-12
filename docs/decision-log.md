@@ -14,3 +14,9 @@ Append dated decisions here; include the evidence and what would change the deci
 - **Decision:** Evaluate matched standard and FFN-free grounding decoders to identify which visual-language reference types attention-only decoding handles, and where it fails.
 - **Why:** Direct attention-map grounding is already established. Recent attention-only tool-calling work motivates the hypothesis that attention succeeds when the answer is retrievable from supplied context.
 - **Revisit when:** A prior controlled study already measures this boundary on real-image visual grounding.
+
+## 2026-08-12 — Freeze an observable expression taxonomy before evaluation
+
+- **Decision:** Assign fixed lexical tags and one exclusive direct, absolute, relational, or logical stratum; treat composition and length as overlays.
+- **Why:** The study needs auditable failure slices without presenting inferred latent reasoning as ground truth.
+- **Revisit when:** The training-only manual audit exposes a systematic rule failure; changes stop once validation or test expressions are loaded.

@@ -41,3 +41,9 @@ Append one dated entry for every material setup, experiment, result, or blocker.
 - Locked training, validation, in-domain test, and OOD test roles.
 - Inspected 156 MB of official classic annotation archives, recorded SHA-256 hashes, and removed the temporary copies.
 - No COCO images or Ref-Adv image data downloaded.
+
+## 2026-08-12 — Visual study guide and task taxonomy added
+
+- Added diagrams for dataset records, expression types, model variants, outputs, and split isolation.
+- Locked deterministic task strata, compositional and length overlays, and a training-only manual audit protocol.
+- Passed ten dependency-free taxonomy boundary cases; no dataset or model download required.
