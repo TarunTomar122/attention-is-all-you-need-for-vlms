@@ -26,7 +26,7 @@ Which pretrained model provides sufficiently spatial patch features, usable text
 
 ### Answer
 
-Unresolved. Current candidate: OpenAI CLIP ViT-L/14@336px. A smaller backbone may be needed as a replication control.
+Resolved. Use SigLIP 2 B/16 at 384px as the primary backbone and OpenAI CLIP L/14 at 336px as a replication. Both expose a 24 × 24 patch grid; both remain completely frozen. See [backbone.md](backbone.md).
 
 ## #3: What exactly counts as an attention-only grounding decoder?
 

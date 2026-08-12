@@ -25,3 +25,10 @@ Implication: test the unmeasured visual boundary—retrieval-style references ve
 - Confirmed synthetic **RefEx** results are unusually relevant: one attention-only layer handles attribute composition, while its relational variant needs two layers. Natural images and frozen VLM features remain untested in that controlled setting.
 - Added Ref-Adv as a candidate shortcut-resistant evaluation set because it includes hard distractors and annotated reasoning facets.
 - Full source matrix and claim limits: [literature-audit.md](literature-audit.md).
+
+## 2026-08-12 — Backbone selected
+
+- Selected SigLIP 2 B/16 at 384px as the primary frozen backbone because its released training recipe explicitly improves localization and dense features.
+- Retained OpenAI CLIP L/14 at 336px as a replication to test whether the FFN gap depends on SigLIP 2's localization-oriented pretraining.
+- Both yield 24 × 24 patch grids, avoiding a spatial-resolution confound in the decoder comparison.
+- Pinned both Hugging Face model revisions and verified checkpoint sizes without downloading weights. Full rationale: [backbone.md](backbone.md).

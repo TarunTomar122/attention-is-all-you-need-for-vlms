@@ -18,3 +18,9 @@ Append one dated entry for every material setup, experiment, result, or blocker.
 - Created the canonical GPU-readiness decision map.
 - Completed a focused novelty audit and recorded the provisional research gap.
 - No model weights, large datasets, training jobs, or rented compute used.
+
+## 2026-08-12 — Backbone decision resolved
+
+- Locked the primary and replication frozen backbones with matching 24 × 24 spatial grids.
+- Verified public access, revisions, licenses where declared, and checkpoint sizes using repository metadata only.
+- No model weights downloaded.
