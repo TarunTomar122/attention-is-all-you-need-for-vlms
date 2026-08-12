@@ -6,7 +6,7 @@ Status: locked before implementation or test-set access
 
 The primary comparison is `A4` versus `S4` with SigLIP 2 on the RefCOCOg UMD test split, averaged over paired seeds `{0, 1, 2}`.
 
-Let `Δ(stratum) = Acc@0.5(A4) - Acc@0.5(S4)`, measured in percentage points.
+Let `Δ(stratum) = Acc@0.5(A4) - Acc@0.5(S4)`, measured in percentage points. The direct stratum contains only expressions with at most eight tokens and no detected structural cue; longer unmatched expressions are reported as `unclassified` and excluded from the confirmatory interaction.
 
 ```mermaid
 flowchart LR

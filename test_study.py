@@ -23,7 +23,7 @@ def check() -> None:
         "person in the background": ("absolute", ("absolute",), False),
         "the cup next to the laptop": ("relational", ("relation",), False),
         "the woman wearing red beside the child": (
-            "relational", ("attribute", "relation"), True,
+            "relational", ("attribute", "relation"), False,
         ),
         "the second person from the right": ("logical", ("ordinal",), False),
         "the smaller pot in front of the pan": (
@@ -36,6 +36,9 @@ def check() -> None:
             "logical", ("cardinality", "relation"), True,
         ),
         "2 dogs on the left": ("logical", ("absolute", "cardinality"), True),
+        "a person doing something complicated while everyone watches from a distance": (
+            "unclassified", (), False,
+        ),
     }
     for expression, expected in cases.items():
         result = classify_expression(expression)

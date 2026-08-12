@@ -58,3 +58,9 @@ Append one dated entry for every material setup, experiment, result, or blocker.
 - Implemented FFN-free and standard one-query decoders, paired initialization, area-weighted targets, deterministic box conversion, metrics, and the frozen lexical taxonomy.
 - Passed one focused CPU check covering distributions, padding masks, final-FFN gradients, FFN absence, target geometry, box bounds, metrics, and the `A8`/`S4` parameter match.
 - No model or dataset download used.
+
+## 2026-08-12 — Training-only taxonomy audit completed
+
+- Checksum-verified the RefCOCOg annotation archive, sampled 40 training expressions per final stratum, and published the 200-row audit.
+- Removed broad relation and counting triggers, tightened position cues, and added an honest `unclassified` bucket for long unmatched descriptions.
+- Deleted the temporary annotation archive after the audit; no images, validation expressions, or test expressions were loaded.

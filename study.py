@@ -17,22 +17,18 @@ LEXICONS = {
         "red", "silver", "striped", "white", "wooden", "yellow",
     },
     "absolute": {
-        "background", "bottom", "bottommost", "center", "central",
-        "foreground", "leftmost", "middle", "rear", "rightmost", "top",
-        "topmost",
+        "background", "bottom", "bottommost", "center", "central", "foreground",
+        "leftmost", "middle", "rightmost", "topmost",
     },
     "comparison": {
-        "biggest", "closest", "farthest", "fewest", "furthest", "highest",
-        "largest", "least", "longest", "lowest", "most", "nearest", "same",
-        "shortest", "smaller", "smallest", "tallest",
+        "biggest", "closest", "darker", "darkest", "farther", "farthest", "fewest",
+        "further", "furthest", "highest", "larger", "largest", "least",
+        "leftmost", "lighter", "longest", "lowest", "most", "nearest",
+        "rightmost", "same", "shortest", "smaller", "smallest", "tallest",
     },
     "ordinal": {
         "first", "second", "third", "fourth", "fifth", "sixth", "seventh",
         "eighth", "ninth", "tenth",
-    },
-    "cardinality": {
-        "both", "couple", "double", "eight", "five", "four", "nine", "pair",
-        "seven", "six", "three", "triple", "two",
     },
     "negation": {
         "aren't", "cannot", "can't", "doesn't", "don't", "except", "isn't",
@@ -40,16 +36,28 @@ LEXICONS = {
     },
 }
 RELATIONS = (
-    "attached to", "behind", "below", "beside", "between", "carrying",
-    "close to", "covered by", "crossing", "facing", "far from", "holding",
-    "in front of", "inside", "left of", "looking at", "near", "next to",
-    "on top of", "outside", "owned by", "ridden by", "riding", "right of",
-    "under", "underneath", "wearing", "with", "worn by",
+    "above", "atop", "attached to", "behind", "below", "beneath", "beside", "between",
+    "balanced on", "blocked by", "carried by", "carrying", "close to", "contains", "covered by", "crossing",
+    "eating out", "facing a", "facing camera", "facing the", "far from", "feeding",
+    "following", "held by", "hold", "holding", "holds", "in front of", "in hand",
+    "infront", "inside", "kept in", "leaning on",
+    "leading", "left of", "looking at", "near", "next to", "on top of",
+    "kneeling on", "left side of", "outside", "owned by", "ridden by", "riding",
+    "right of", "right side of", "seated on", "sits in", "sits on", "sitting in",
+    "on a plate", "on the cutting board", "on the plate", "on its head", "sitting on",
+    "sleeping on", "snuggling", "standing on", "stands on",
+    "tending to", "touching", "under",
+    "underneath", "worn by",
 )
-ABSOLUTE_PHRASES = (
-    "at the left", "at the right", "in the left", "in the right",
-    "on the left", "on the right",
+ABSOLUTE_PATTERN = re.compile(
+    r"\b(?:at|in|on|to) (?:the )?(?:far )?(?:left|right)\b"
+    r"|\b(?:left|right)(?: hand|hand)? (?:picture|side)\b"
+    r"|\b(?:top|bottom|upper|lower) (?:left|right)(?:hand)?\b"
+    r"|\b(?:backside|back) of (?:the )?(?:image|picture)\b"
+    r"|\bfar (?:left|right)\b"
+    r"|\b(?:all the way )?in (?:the )?back\b"
 )
+CARDINALITY = {"both", "eight", "five", "four", "nine", "seven", "six", "three", "two"}
 
 
 @dataclass(frozen=True)
@@ -67,13 +75,66 @@ def classify_expression(expression: str) -> Classification:
     tokens = normalized.split()
     token_set = set(tokens)
     tags = {name for name, words in LEXICONS.items() if token_set & words}
-    if any(token.isdigit() for token in tokens):
+    comparison_hits = token_set & LEXICONS["comparison"]
+    if comparison_hits == {"most"} and "most of" in normalized:
+        tags.discard("comparison")
+    numeric_ordinal = re.search(r"\b\d+ (?:st|nd|rd|th)\b", normalized)
+    if numeric_ordinal:
+        tags.add("ordinal")
+    cardinality_indices = [
+        index for index, token in enumerate(tokens)
+        if token.isdigit() or token in CARDINALITY
+    ]
+    identifier_context = token_set & {
+        "chest", "jersey", "letters", "license", "number", "plate", "screen", "uniform",
+    }
+    cardinality_indices = [
+        index for index in cardinality_indices
+        if not (index and tokens[index - 1] == "number")
+        and not ((index and tokens[index - 1] == "x") or (index + 1 < len(tokens) and tokens[index + 1] == "x"))
+        and not ((index and len(tokens[index - 1]) == 1) or (index + 1 < len(tokens) and len(tokens[index + 1]) == 1))
+        and not (index + 1 < len(tokens) and tokens[index + 1] in {"st", "nd", "rd", "th"})
+        and not (tokens[index].isdigit() and index + 1 < len(tokens) and tokens[index + 1] == "horse")
+    ]
+    if cardinality_indices and not identifier_context:
         tags.add("cardinality")
-    if any(phrase in normalized for phrase in ABSOLUTE_PHRASES):
+    if "pair of" in normalized and "pair of scissors" not in normalized:
+        tags.add("cardinality")
+    absolute_match = ABSOLUTE_PATTERN.search(normalized)
+    body_part_position = re.search(
+        r"\b(?:at|in|on|to) (?:the )?(?:left|right) (?:arm|foot|hand|leg)\b",
+        normalized,
+    )
+    if absolute_match and not body_part_position:
         tags.add("absolute")
-    relation_count = sum(normalized.count(phrase) for phrase in RELATIONS)
+    relation_count = sum(
+        len(re.findall(rf"\b{re.escape(phrase)}\b", normalized)) for phrase in RELATIONS
+    )
+    relation_count -= len(re.findall(
+        r"\b(?:left|right)(?: side)? of (?:the )?(?:image|picture)\b", normalized,
+    ))
+    relation_count -= len(re.findall(
+        r"\b(?:sitting|standing|stands) on (?:the )?(?:left|right)\b", normalized,
+    ))
+    relation_count = max(0, relation_count)
     if relation_count:
         tags.add("relation")
+    part_relation = re.search(r"\b(?:arm|back|head|leg|part|side) of (?:a|the)\b", normalized)
+    if re.search(r"\bside of (?:a|the) (?:image|picture)\b", normalized):
+        part_relation = None
+    if token_set & {"another", "other"} or part_relation:
+        tags.add("relation")
+    if re.search(r"\bstanding with (?:a |the )?(?:boy|child|girl|man|person|woman)\b", normalized):
+        tags.add("relation")
+
+    if "in the front" in normalized and "in the front of" not in normalized:
+        tags.add("absolute")
+    if "middle aged" in normalized and not ABSOLUTE_PATTERN.search(normalized):
+        tags.discard("absolute")
+    if re.search(r"\b(?:top|bottom) of\b|\bdown the middle\b", normalized) and not ABSOLUTE_PATTERN.search(normalized):
+        tags.discard("absolute")
+    if re.search(r"\b(?:facing|looking|looks|turned) (?:to )?(?:the )?(?:left|right)\b", normalized):
+        tags.discard("absolute")
 
     if tags & {"comparison", "ordinal", "cardinality", "negation"}:
         stratum = "logical"
@@ -82,7 +143,7 @@ def classify_expression(expression: str) -> Classification:
     elif "absolute" in tags:
         stratum = "absolute"
     else:
-        stratum = "direct"
+        stratum = "direct" if len(tokens) <= 8 else "unclassified"
 
     structural_tags = tags - {"attribute"}
     return Classification(

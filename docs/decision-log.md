@@ -26,3 +26,9 @@ Append dated decisions here; include the evidence and what would change the deci
 - **Decision:** Require direct-reference equivalence within 5 points and an at-least-5-point direct-versus-logical interaction for the main claim.
 - **Why:** A global average cannot establish where attention-only decoding works; practical margins and paired image-clustered intervals make the hypothesis falsifiable.
 - **Revisit when:** Only before test access, with a written statistical justification independent of observed model results.
+
+## 2026-08-12 — Add a taxonomy abstention bucket after the training audit
+
+- **Decision:** Only unmatched expressions of eight tokens or fewer count as direct; longer unmatched text is `unclassified` and excluded from the confirmatory interaction.
+- **Why:** The frozen RefCOCOg training sample showed that long unmatched descriptions often contained relations outside a conservative lexicon.
+- **Revisit when:** Never for this study after validation/test access; future work can replace lexical rules with independently annotated facets.
