@@ -132,6 +132,8 @@ def write_csv(path: Path, rows: list[dict]) -> None:
 
 
 def plot_results(out: Path, rows: list[dict]) -> None:
+    import matplotlib
+    matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
     groups = (("length", "Expression length quartile"), ("distractors", "Distractor-count quartile"))
