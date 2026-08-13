@@ -168,3 +168,11 @@ Append one dated entry for every material setup, experiment, result, or blocker.
 - Ref-Adv-s preparation completed at 1,142/1,142 rows after logging and clamping one sub-pixel boundary overflow (`row 261`); genuinely invalid boxes remain rejected.
 - Started evaluation-only Ref-Adv-s predictions for RefCOCOg-trained SigLIP2 `D0/A4/S4/A8`, seeds `0/1/2`, at frozen `tau = 0.8`. No Ref-Adv training or tuning is performed.
 - Added one deterministic analysis entrypoint that will write per-example metrics, metadata-defined length/distractor slices, negation slices, image-clustered bootstrap intervals, two plots, an interpretation, and a summary once all 12 prediction tensors finish.
+
+## 2026-08-13 — Ref-Adv-s evaluation and boundary analysis completed
+
+- Completed all 12 evaluation-only prediction jobs (`D0/A4/S4/A8 × seeds 0/1/2`) on all 1,142 prepared Ref-Adv-s rows at frozen `tau = 0.8`; no Ref-Adv training or tuning was performed.
+- Overall IoU@0.5 was A4 `8.11%`, S4 `7.33%`, and A8 `7.91%`. The paired image-clustered bootstrap estimated A4−S4 `+0.79 pp` with 95% CI `[+0.06, +1.52] pp`; A8−S4 was `+0.58 pp`.
+- The metadata slices did not show an A4 failure boundary: negation A4−S4 `−0.15 pp`, length Q4 `+1.79 pp`, and distractor Q4 `0.00 pp`; all four length and distractor bins were reported before interpretation.
+- Classified the result as Case A: A4 still matches S4 overall and on the prepared hard slices. The recorded next recommendation is FineCops-Ref as a controlled compositional benchmark plus decoder-efficiency measurement; it was not launched automatically.
+- Committed the seven publication artifacts under `docs/results/refadv/` (summary, per-example table, slices, bootstrap JSON, interpretation, and two plots). The four RefCOCO seed-0 jobs remain the only active training work; no RefCOCO seeds 1–2, RefCOCO+, or CLIP jobs were launched.

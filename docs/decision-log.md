@@ -121,3 +121,10 @@ Append dated decisions here; include the evidence and what would change the deci
 - **Why:** The bins are determined by dataset statistics rather than by observed model gaps, avoiding performance-driven slicing.
 - **Native fields:** Use `use_negation`, numeric `distractors`, `image_source`, and `human_authored`. The prepared schema has no official reasoning/facet annotations; do not invent semantic labels.
 - **Statistics:** Use the existing image-clustered paired bootstrap, seed `20260812`, 10,000 replicates, with all three model seeds averaged per example before resampling.
+
+## 2026-08-13 — Ref-Adv-s does not reveal an A4 failure boundary
+
+- **Decision:** Classify the prepared Ref-Adv-s result as Case A: retain A4 as a practical match to S4 and move next to the controlled compositional benchmark recommendation, without launching it automatically.
+- **Evidence:** Across 1,142 rows, A4/S4 IoU@0.5 was `8.11%/7.33%`; paired A4−S4 was `+0.79 pp` with 95% CI `[+0.06, +1.52] pp`. A8 was `7.91%` (`+0.58 pp` versus S4), so the extra attention depth was not needed to recover an observed FFN gap.
+- **Boundary check:** A4−S4 was `−0.15 pp` for negated expressions, `+1.79 pp` in the longest-expression quartile, and `0.00 pp` in the highest distractor quartile. These slices do not support a monotonic difficulty-dependent loss for A4; official reasoning/facet labels were absent, so no semantic labels were invented.
+- **Consequence:** Recommend FineCops-Ref and decoder-efficiency measurement as the next experiment. Do not launch FineCops-Ref, A4-wide, CLIP, or additional classic-dataset seeds until the study owner explicitly authorizes the next spend.
