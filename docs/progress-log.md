@@ -155,3 +155,9 @@ Append one dated entry for every material setup, experiment, result, or blocker.
 - The locked three-seed image-clustered bootstrap found A4 minus S4 IoU@0.5 `+0.26 pp` on direct references (90% CI `[-0.33, +0.84] pp`) and `-1.04 pp` on logical references. The direct-minus-logical interaction was `+1.30 pp`, with 95% CI `[-0.09, +2.66] pp`; direct retention passed, but the preregistered interaction gate did not.
 - Modality controls are strong: correct minus image-shuffle was `+53.3 pp` for A4 and `+53.2 pp` for S4 overall; correct minus text-shuffle was `+41.6 pp` and `+40.8 pp`. These controls support genuine image/text use, while the main FFN-free task-interaction claim remains unconfirmed on RefCOCOg.
 - Started the four-job RefCOCO replication batch after the RefCOCOg gate. RefCOCO+ and the CLIP/Ref-Adv extensions remain queued behind the classic replication checkpoints.
+
+## 2026-08-13 — RefCOCO replication is active
+
+- The first four RefCOCO UNC seed-0 jobs (`D0`, `A4`, `S4`, `A8`) reached update 500 with finite validation losses `5.7237`, `5.6385`, `5.6435`, and `5.6364`.
+- The long-running pod queues remain alive: after the 24 classic replication checkpoints they will export testA/testB predictions, then start the pinned CLIP and Ref-Adv stages where the environment permits.
+- The RefCOCOg depth diagnostic is now version-controlled: D0 `24.83%`, A4 `55.06%`, S4 `54.97%`, and A8 `55.99%` mean IoU@0.5 across three seeds.
