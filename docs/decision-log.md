@@ -107,3 +107,17 @@ Append dated decisions here; include the evidence and what would change the deci
 - **Interpretation:** A4 retained direct performance relative to S4 (`+0.26 pp`, 90% CI `[-0.33, +0.84] pp`), while logical performance was lower (`-1.04 pp`). The estimate is directionally consistent with a retrieval–reasoning boundary but is too uncertain for the confirmatory claim.
 - **Control gate:** Both decoders are strongly modality-dependent: image shuffling reduced IoU@0.5 by about `53 pp`, and text shuffling by about `41 pp`.
 - **Revisit when:** The independent RefCOCO and RefCOCO+ replications, plus their separately reported testA/testB intervals, are complete.
+
+## 2026-08-13 — Reprioritize the remaining GPU run around the failure boundary
+
+- **Decision:** Preserve the active RefCOCO seed-0 jobs, prevent RefCOCO seeds 1–2 and the large RefCOCO+/CLIP matrix from launching, and prioritize evaluation-only Ref-Adv-s analysis.
+- **Why:** The scientific question is where A4 first falls behind S4 as expressions become difficult; more near-duplicate classic-dataset seeds add less evidence than the shortcut-resistant Ref-Adv-s stress test.
+- **Scope:** This does not modify completed RefCOCOg runs, checkpoints, manifests, seeds, the frozen mass `tau = 0.8`, or any test-selection rule. No model or threshold is tuned on Ref-Adv-s.
+- **Revisit when:** Ref-Adv-s slices and paired intervals are complete; only then choose the next expensive experiment.
+
+## 2026-08-13 — Define Ref-Adv-s difficulty bins from metadata before measuring performance
+
+- **Decision:** Use inclusive empirical quartiles of the 1,142 prepared Ref-Adv-s rows for expression token count and native distractor count. Report `Q1`–`Q4` and retain the exact cut points in `refadv_bootstrap.json`.
+- **Why:** The bins are determined by dataset statistics rather than by observed model gaps, avoiding performance-driven slicing.
+- **Native fields:** Use `use_negation`, numeric `distractors`, `image_source`, and `human_authored`. The prepared schema has no official reasoning/facet annotations; do not invent semantic labels.
+- **Statistics:** Use the existing image-clustered paired bootstrap, seed `20260812`, 10,000 replicates, with all three model seeds averaged per example before resampling.

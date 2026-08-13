@@ -161,3 +161,10 @@ Append one dated entry for every material setup, experiment, result, or blocker.
 - The first four RefCOCO UNC seed-0 jobs (`D0`, `A4`, `S4`, `A8`) reached update 500 with finite validation losses `5.7237`, `5.6385`, `5.6435`, and `5.6364`.
 - The long-running pod queues remain alive: after the 24 classic replication checkpoints they will export testA/testB predictions, then start the pinned CLIP and Ref-Adv stages where the environment permits.
 - The RefCOCOg depth diagnostic is now version-controlled: D0 `24.83%`, A4 `55.06%`, S4 `54.97%`, and A8 `55.99%` mean IoU@0.5 across three seeds.
+
+## 2026-08-13 — Failure-boundary run reprioritized
+
+- Stopped only the expansion watchers that would have launched RefCOCO seeds 1–2, RefCOCO+, and CLIP; the four active RefCOCO seed-0 trainers were left untouched.
+- Ref-Adv-s preparation completed at 1,142/1,142 rows after logging and clamping one sub-pixel boundary overflow (`row 261`); genuinely invalid boxes remain rejected.
+- Started evaluation-only Ref-Adv-s predictions for RefCOCOg-trained SigLIP2 `D0/A4/S4/A8`, seeds `0/1/2`, at frozen `tau = 0.8`. No Ref-Adv training or tuning is performed.
+- Added one deterministic analysis entrypoint that will write per-example metrics, metadata-defined length/distractor slices, negation slices, image-clustered bootstrap intervals, two plots, an interpretation, and a summary once all 12 prediction tensors finish.
