@@ -191,6 +191,15 @@ def classify(rows: list[dict]) -> tuple[str, str]:
     return "Case C", "A4 has a clear hard-slice deficit and A8 does not recover it in the available evidence."
 
 
+def next_experiment(case: str) -> str:
+    return {
+        "Case A": "Recommend FineCops-Ref as the next controlled compositional benchmark and measure decoder efficiency.",
+        "Case B": "Investigate whether additional attention capacity substitutes for the FFN before expanding datasets.",
+        "Case C": "Run a parameter-matched attention-only control before attributing the gap specifically to FFNs.",
+        "Case D": "Run only the targeted additional evaluation or seeds needed to narrow the noisy boundary; do not launch a broad matrix.",
+    }[case]
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--data", type=Path, required=True)
@@ -269,13 +278,15 @@ def main() -> None:
     ]
     for row in slice_rows:
         summary.append(f"| {row['slice']} | {row['n']} | {100*row['A4']:.2f}% | {100*row['S4']:.2f}% | {100*row['A8']:.2f}% | {100*row['delta_a4_s4']:+.2f} pp | {100*row['delta_a8_s4']:+.2f} pp | [{100*row['a4_s4_ci95_low']:+.2f}, {100*row['a4_s4_ci95_high']:+.2f}] pp |")
-    summary += ["", "## Interpretation gate", "", f"**{case}.** {reason}", "", "Official reasoning/facet annotations were not present in the prepared schema, so no semantic labels were invented. The native fields used here are negation, distractor count, image source, and human-authored status.", ""]
+    recommendation = next_experiment(case)
+    summary += ["", "## Interpretation gate", "", f"**{case}.** {reason}", "", f"**Next-experiment recommendation:** {recommendation}", "", "Official reasoning/facet annotations were not present in the prepared schema, so no semantic labels were invented. The native fields used here are negation, distractor count, image source, and human-authored status.", ""]
     (args.output / "refadv_summary.md").write_text("\n".join(summary))
     (args.output / "refadv_interpretation.md").write_text(
         f"# Ref-Adv-s interpretation\n\n**Classification: {case}.** {reason}\n\n"
         f"A4 overall: {100*overall['A4']:.2f}%; S4 overall: {100*overall['S4']:.2f}%; A8 overall: {100*overall['A8']:.2f}%. "
         f"Overall A4−S4: {100*overall['delta_a4_s4']:+.2f} percentage points, with 95% CI "
         f"[{100*overall['a4_s4_ci95_low']:+.2f}, {100*overall['a4_s4_ci95_high']:+.2f}].\n\n"
+        f"**Which result determines the next experiment:** {recommendation}\n\n"
         "Read the length and distractor quartile plots together: a boundary requires a consistent worsening A4−S4 trend, not one isolated slice. "
         "A8 recovery is evidence about attention capacity, not proof that the FFN itself is causal. The next expensive experiment is not launched automatically.\n"
     )
