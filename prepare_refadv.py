@@ -28,10 +28,21 @@ def main() -> None:
         expression = row["normal_caption"].strip()
         box = list(map(float, row["solution"]))
         width, height = int(row["width"]), int(row["height"])
-        if (
-            len(box) != 4 or not all(map(math.isfinite, box))
-            or not (0 <= box[0] < box[2] <= width and 0 <= box[1] < box[3] <= height)
-        ):
+        if len(box) != 4 or not all(map(math.isfinite, box)):
+            raise ValueError(f"invalid Ref-Adv-s box at row {index}")
+        limits = (width, height, width, height)
+        clamped = []
+        for coordinate, limit in zip(box, limits):
+            if coordinate < 0 and coordinate >= -1e-6:
+                clamped.append(0.0)
+            elif coordinate > limit and coordinate <= limit + 1e-6:
+                clamped.append(float(limit))
+            else:
+                clamped.append(coordinate)
+        if clamped != box:
+            print(f"clamped Ref-Adv-s row {index} ({row['row_idx']}) for sub-pixel boundary overflow")
+            box = clamped
+        if not (0 <= box[0] < box[2] <= width and 0 <= box[1] < box[3] <= height):
             raise ValueError(f"invalid Ref-Adv-s box at row {index}")
         image_path = image_dir / f"{index:04}.jpg"
         row["image"].convert("RGB").save(image_path, quality=95)
