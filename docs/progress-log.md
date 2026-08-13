@@ -153,7 +153,7 @@ Append one dated entry for every material setup, experiment, result, or blocker.
 - Completed immutable `D0`, `A8`, and recovered `S4` seed-0 training runs at 5,000 updates; final validation losses were D0 `5.7638/5.7650/5.7633`, A8 `5.4668/5.4567/5.4575`, and S4 seed 0 `5.4743`.
 - Evaluated all 12 correct RefCOCOg test predictions plus 12 paired text/image-shuffle controls at frozen mass `0.8`; all raw files and logs are retained under `runs/publishable-eval` on the persistent pod.
 - The locked three-seed image-clustered bootstrap found A4 minus S4 IoU@0.5 `+0.26 pp` on direct references (90% CI `[-0.33, +0.84] pp`) and `-1.04 pp` on logical references. The direct-minus-logical interaction was `+1.30 pp`, with 95% CI `[-0.09, +2.66] pp`; direct retention passed, but the preregistered interaction gate did not.
-- Modality controls are strong: correct minus image-shuffle was `+53.3 pp` for A4 and `+53.2 pp` for S4 overall; correct minus text-shuffle was `+41.6 pp` and `+40.8 pp`. These controls support genuine image/text use, while the main FFN-free task-interaction claim remains unconfirmed on RefCOCOg.
+- Modality controls are strong: averaged over all examples and seeds, correct minus image-shuffle was `+48.7 pp` for A4 and `+48.6 pp` for S4; correct minus text-shuffle was `+22.6 pp` and `+22.4 pp`. These controls support genuine image/text use, while the main FFN-free task-interaction claim remains unconfirmed on RefCOCOg.
 - Started the four-job RefCOCO replication batch after the RefCOCOg gate. RefCOCO+ and the CLIP/Ref-Adv extensions remain queued behind the classic replication checkpoints.
 
 ## 2026-08-13 — RefCOCO replication is active
