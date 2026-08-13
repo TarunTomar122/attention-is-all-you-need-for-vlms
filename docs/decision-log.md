@@ -79,3 +79,10 @@ Append dated decisions here; include the evidence and what would change the deci
 - **Evidence:** On the frozen RefCOCOg test mass `0.8`, A4 reached IoU@0.5 `0.5468` and S4 `0.5404`. Text shuffling reduced A4/S4 to `0.3310/0.3277`; image shuffling reduced them to `0.0627/0.0624`. Uniform and position-prior baselines were `0.0760/0.1071`.
 - **Interpretation:** Both decoders use image and text information and beat fixed priors. The A4–S4 difference is not yet a claim; three seeds and clustered analysis remain required.
 - **Operational note:** Singleton category groups are preserved unchanged in shuffle controls rather than aborting the full diagnostic.
+
+## 2026-08-13 — Recover data before spending GPU budget
+
+- **Decision:** Treat the persistent workspace as authoritative, verify every manifest image path, and delay training until the integrity gate passes.
+- **Evidence:** Pod migration exposed the JSONL manifests but only part of the extracted COCO tree. The 13 GB archive was intact; the provider migration itself reported rsync failure.
+- **Action:** Move the archive off the workspace quota, extract only the 25,799 unique images referenced by the frozen train/val/test manifests, and verify zero missing paths. Then run the CUDA smoke test.
+- **Scope:** This is an operational reproducibility decision; it does not change the dataset, model, learning rate, or evaluation protocol.

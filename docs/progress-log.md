@@ -128,3 +128,11 @@ Append one dated entry for every material setup, experiment, result, or blocker.
 - The partial seed checkpoints are preserved on the pod for tomorrow, but are not treated as completed runs or used for test claims.
 - Interrupted both training sessions cleanly, verified no training tmux sessions remained, and confirmed GPU utilization returned to `0%` with `1 MiB` allocated.
 - No further jobs were launched after the cutoff. Tomorrow resumes from the preserved checkpoints only if run metadata and update state are verified; otherwise the affected pairs restart in fresh immutable directories.
+
+## 2026-08-13 — Fresh RunPod recovery and persistent matrix restarted
+
+- A new RTX A5000 pod was attached to the persistent workspace. The GitHub repo, RefCOCOg manifests, and 13 GB COCO archive were available; yesterday's checkpoints were not present on this container.
+- The manifests retain the historical `/root/attention-vlm-data` image root, so the pod now maps that path to the persistent dataset directory. All 25,799 unique image paths referenced by train/val/test were verified present.
+- The workspace quota could not hold both the COCO archive and extracted images. The archive was moved to the pod-local root disk and only manifest-referenced images were extracted persistently; no dataset bytes were redownloaded.
+- The pinned 2.8.0 wheel was abandoned after the base image's CUDA-enabled `torch 2.4.1+cu124` was confirmed working. Project dependencies were installed in a system-site-packages venv; `test_study.py` passes.
+- A persistent, sequential core matrix was launched after the smoke gate: `D0/A4/S4/A8 × seeds 0/1/2`, 5,000 updates each, shared `3e-4` learning rate, validation/checkpoints every 500 updates, and separate immutable output directories. The smoke run passed with finite validation losses (`6.2281`, `6.2261`) before the first full `D0` run.
