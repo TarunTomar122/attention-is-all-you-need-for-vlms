@@ -93,3 +93,9 @@ Append dated decisions here; include the evidence and what would change the deci
 - **Why:** The network-mounted workspace made frozen-backbone image reads CPU/IO-bound and produced no full-run checkpoint after roughly 13 minutes. Local storage reached the first A4 seed-0 checkpoint at update 500.
 - **Scope:** This changes storage placement and narrows the immediate workload to the primary causal comparison; it does not change model code, data, learning rate, or test protocol.
 - **Operational contract:** Detached sequential runner, immutable output directories, validation and atomic checkpoints every 500 updates, and stop conditions for non-finite loss, OOM, missing paths, or failed metadata.
+
+## 2026-08-13 — Parallelize only the new seed pairs
+
+- **Decision:** Stop the redundant S4 seed-0 reproduction before its first checkpoint and run the genuinely new A4/S4 seed-1 and seed-2 jobs concurrently.
+- **Why:** Yesterday's A4/S4 seed-0 held-out result is already preserved; A4 seed 0 was reproduced exactly (`5.4772`) as a recovery check. Four concurrent jobs use safe VRAM headroom while directly advancing the replication.
+- **Guard:** Do not add more jobs while host preprocessing load is high. Continue only with finite losses, atomic 500-step checkpoints, and isolated output directories.
