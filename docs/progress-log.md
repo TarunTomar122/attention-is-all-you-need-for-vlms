@@ -2,6 +2,13 @@
 
 Append one dated entry for every material setup, experiment, result, or blocker.
 
+## 2026-08-13 — Publishable expansion queued
+
+- Reattached the persistent RunPod workspace and verified the RTX A5000, CUDA runtime, RefCOCO/RefCOCO+ archives, COCO image coverage, and canonical manifests.
+- Started three-seed RefCOCOg `D0` and `A8` runs plus the recovered `S4` seed-0 run; the six new D0/A8 jobs reached update 1,000 with finite validation losses while using about 13 GiB of 24.6 GiB VRAM.
+- Queued immutable post-training RefCOCOg evaluations, modality shuffles, the locked bootstrap analysis, RefCOCO/RefCOCO+ four-variant replication matrices, and later CLIP/Ref-Adv work in persistent four-job batches.
+- This entry records setup only; no new accuracy claim is made until raw predictions and summaries are verified.
+
 ## 2026-08-12 — Project initialized
 
 - GPUHub instance verified: RTX 4080 Super, 32 GB VRAM, PyTorch 2.8.0 with CUDA 12.8.
