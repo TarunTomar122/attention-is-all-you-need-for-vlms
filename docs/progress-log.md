@@ -176,3 +176,8 @@ Append one dated entry for every material setup, experiment, result, or blocker.
 - The metadata slices did not show an A4 failure boundary: negation A4−S4 `−0.15 pp`, length Q4 `+1.79 pp`, and distractor Q4 `0.00 pp`; all four length and distractor bins were reported before interpretation.
 - Classified the result as Case A: A4 still matches S4 overall and on the prepared hard slices. The recorded next recommendation is FineCops-Ref as a controlled compositional benchmark plus decoder-efficiency measurement; it was not launched automatically.
 - Committed the seven publication artifacts under `docs/results/refadv/` (summary, per-example table, slices, bootstrap JSON, interpretation, and two plots). The four RefCOCO seed-0 jobs remain the only active training work; no RefCOCO seeds 1–2, RefCOCO+, or CLIP jobs were launched.
+
+## 2026-08-13 — RefCOCO seed-0 jobs reached update 2,000
+
+- The preserved `D0/A4/S4/A8` RefCOCO seed-0 trainers are all healthy at update `2,000/5,000` with finite validation losses `5.6355/5.4471/5.4586/5.4424` respectively.
+- Atomic checkpoints were refreshed for all four jobs; no summary files exist yet because training is still in progress. No expansion or forbidden jobs were launched.
