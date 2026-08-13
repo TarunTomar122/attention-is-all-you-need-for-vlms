@@ -251,10 +251,19 @@ def main() -> None:
     summary = [
         "# Ref-Adv-s failure-boundary summary", "",
         "Protocol: pinned Ref-Adv-s revision, 1,142 test examples, frozen `tau = 0.8`, SigLIP2 RefCOCOg checkpoints, three seeds, and image-clustered bootstrap (10,000 replicates; seed 20260812).", "",
-        "## Overall IoU@0.5", "",
-        "| Model | Accuracy |", "| --- | ---: |",
-        f"| A4 | {100 * overall['A4']:.2f}% |", f"| S4 | {100 * overall['S4']:.2f}% |", f"| A8 | {100 * overall['A8']:.2f}% |",
-        f"| A4 − S4 | {100 * overall['delta_a4_s4']:+.2f} pp |", f"| A8 − S4 | {100 * overall['delta_a8_s4']:+.2f} pp |", "",
+        "## Overall metrics", "",
+        "| Model | IoU@0.5 | Mean IoU | Pointing | Target mass |", "| --- | ---: | ---: | ---: | ---: |",
+    ]
+    for variant in ("A4", "S4", "A8"):
+        summary.append(
+            f"| {variant} | {100 * float(averaged[variant]['acc_iou_0.5'].mean()):.2f}% | "
+            f"{float(averaged[variant]['iou'].mean()):.4f} | "
+            f"{100 * float(averaged[variant]['pointing'].mean()):.2f}% | "
+            f"{float(averaged[variant]['target_mass'].mean()):.4f} |"
+        )
+    summary += [
+        f"| A4 − S4 IoU@0.5 | {100 * overall['delta_a4_s4']:+.2f} pp | — | — | — |",
+        f"| A8 − S4 IoU@0.5 | {100 * overall['delta_a8_s4']:+.2f} pp | — | — | — |", "",
         "## Slice results", "", "See `refadv_slices.csv` for every slice, confidence interval, and sample count. Bins are inclusive empirical quartiles computed from Ref-Adv metadata before model-performance slicing.", "",
         "| Slice | N | A4 | S4 | A8 | A4−S4 | A8−S4 | A4−S4 95% CI |", "| --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |",
     ]
