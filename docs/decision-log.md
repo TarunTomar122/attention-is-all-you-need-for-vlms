@@ -99,3 +99,11 @@ Append dated decisions here; include the evidence and what would change the deci
 - **Decision:** Stop the redundant S4 seed-0 reproduction before its first checkpoint and run the genuinely new A4/S4 seed-1 and seed-2 jobs concurrently.
 - **Why:** Yesterday's A4/S4 seed-0 held-out result is already preserved; A4 seed 0 was reproduced exactly (`5.4772`) as a recovery check. Four concurrent jobs use safe VRAM headroom while directly advancing the replication.
 - **Guard:** Do not add more jobs while host preprocessing load is high. Continue only with finite losses, atomic 500-step checkpoints, and isolated output directories.
+
+## 2026-08-13 — RefCOCOg gate is descriptive, not confirmatory
+
+- **Decision:** Keep the locked study and run the planned RefCOCO/RefCOCO+ replications; do not claim that attention-only is better on logical grounding from RefCOCOg.
+- **Evidence:** The three-seed image-clustered bootstrap passed direct retention but missed the predeclared task-interaction gate: direct-minus-logical A4–S4 delta `+1.30 pp`, 95% CI `[-0.09, +2.66] pp`.
+- **Interpretation:** A4 retained direct performance relative to S4 (`+0.26 pp`, 90% CI `[-0.33, +0.84] pp`), while logical performance was lower (`-1.04 pp`). The estimate is directionally consistent with a retrieval–reasoning boundary but is too uncertain for the confirmatory claim.
+- **Control gate:** Both decoders are strongly modality-dependent: image shuffling reduced IoU@0.5 by about `53 pp`, and text shuffling by about `41 pp`.
+- **Revisit when:** The independent RefCOCO and RefCOCO+ replications, plus their separately reported testA/testB intervals, are complete.

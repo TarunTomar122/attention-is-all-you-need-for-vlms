@@ -147,3 +147,11 @@ Append one dated entry for every material setup, experiment, result, or blocker.
 - The focused local-storage pipeline passed `test_study.py`, started `A4` seed 0, and reached update 500 with validation loss `5.8121` and a checkpoint. The detached runner remains active with separate immutable directories and 500-update validation/checkpoint cadence.
 - A4 seed 0 completed reproducibly at 5,000 updates with validation loss `5.4772`. The early S4 seed-0 reproduction was stopped before a checkpoint because yesterday's S4 result is already preserved; the GPU was redirected to new seed-1 and seed-2 runs.
 - A4/S4 seeds 1 and 2 are now running in parallel in four isolated directories. At launch, GPU utilization was `96%` with `7.1 GiB` of `24.6 GiB` VRAM and host load `26.47` on 96 CPUs; no additional jobs were added because CPU preprocessing is the current ceiling.
+
+## 2026-08-13 — RefCOCOg three-seed expansion completed
+
+- Completed immutable `D0`, `A8`, and recovered `S4` seed-0 training runs at 5,000 updates; final validation losses were D0 `5.7638/5.7650/5.7633`, A8 `5.4668/5.4567/5.4575`, and S4 seed 0 `5.4743`.
+- Evaluated all 12 correct RefCOCOg test predictions plus 12 paired text/image-shuffle controls at frozen mass `0.8`; all raw files and logs are retained under `runs/publishable-eval` on the persistent pod.
+- The locked three-seed image-clustered bootstrap found A4 minus S4 IoU@0.5 `+0.26 pp` on direct references (90% CI `[-0.33, +0.84] pp`) and `-1.04 pp` on logical references. The direct-minus-logical interaction was `+1.30 pp`, with 95% CI `[-0.09, +2.66] pp`; direct retention passed, but the preregistered interaction gate did not.
+- Modality controls are strong: correct minus image-shuffle was `+53.3 pp` for A4 and `+53.2 pp` for S4 overall; correct minus text-shuffle was `+41.6 pp` and `+40.8 pp`. These controls support genuine image/text use, while the main FFN-free task-interaction claim remains unconfirmed on RefCOCOg.
+- Started the four-job RefCOCO replication batch after the RefCOCOg gate. RefCOCO+ and the CLIP/Ref-Adv extensions remain queued behind the classic replication checkpoints.
