@@ -86,3 +86,10 @@ Append dated decisions here; include the evidence and what would change the deci
 - **Evidence:** Pod migration exposed the JSONL manifests but only part of the extracted COCO tree. The 13 GB archive was intact; the provider migration itself reported rsync failure.
 - **Action:** Move the archive off the workspace quota, extract only the 25,799 unique images referenced by the frozen train/val/test manifests, and verify zero missing paths. Then run the CUDA smoke test.
 - **Scope:** This is an operational reproducibility decision; it does not change the dataset, model, learning rate, or evaluation protocol.
+
+## 2026-08-13 — Use local image storage for the replication
+
+- **Decision:** Run the focused `A4/S4 × seeds 0/1/2` replication against the verified local pod copy of the 25,799 referenced images.
+- **Why:** The network-mounted workspace made frozen-backbone image reads CPU/IO-bound and produced no full-run checkpoint after roughly 13 minutes. Local storage reached the first A4 seed-0 checkpoint at update 500.
+- **Scope:** This changes storage placement and narrows the immediate workload to the primary causal comparison; it does not change model code, data, learning rate, or test protocol.
+- **Operational contract:** Detached sequential runner, immutable output directories, validation and atomic checkpoints every 500 updates, and stop conditions for non-finite loss, OOM, missing paths, or failed metadata.
