@@ -128,3 +128,10 @@ Append dated decisions here; include the evidence and what would change the deci
 - **Evidence:** Across 1,142 rows, A4/S4 IoU@0.5 was `8.11%/7.33%`; paired A4−S4 was `+0.79 pp` with 95% CI `[+0.06, +1.52] pp`. A8 was `7.91%` (`+0.58 pp` versus S4), so the extra attention depth was not needed to recover an observed FFN gap.
 - **Boundary check:** A4−S4 was `−0.15 pp` for negated expressions, `+1.79 pp` in the longest-expression quartile, and `0.00 pp` in the highest distractor quartile. These slices do not support a monotonic difficulty-dependent loss for A4; official reasoning/facet labels were absent, so no semantic labels were invented.
 - **Consequence:** Recommend FineCops-Ref and decoder-efficiency measurement as the next experiment. Do not launch FineCops-Ref, A4-wide, CLIP, or additional classic-dataset seeds until the study owner explicitly authorizes the next spend.
+
+## 2026-08-14 — Close the RefCOCO seed-0 batch without expanding the matrix
+
+- **Decision:** Treat the four completed RefCOCO UNC seed-0 runs as the final replication batch for this overnight goal. Preserve their checkpoints and summaries, and do not launch additional seeds or datasets automatically.
+- **Evidence:** D0/A4/S4/A8 all reached update `5,000`; the final best validation losses were `5.603853749`, `5.341166992`, `5.339118756`, and `5.339440789`. The four checkpoint/summary pairs passed a read audit, and no forbidden jobs were active.
+- **Reason:** This closes the requested operational replication while keeping the scientific scope fixed around the already completed Ref-Adv-s failure-boundary analysis. The Ref-Adv-s integrity audit also passed: 12 tensors × 1,142 examples, frozen `tau = 0.8`, and the predeclared 10,000-replicate clustered bootstrap.
+- **Next:** Use the existing Case A recommendation—FineCops-Ref plus decoder-efficiency measurement—as the next controlled experiment only after explicit authorization; do not spend more GPU time in this run.

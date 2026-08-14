@@ -181,3 +181,10 @@ Append one dated entry for every material setup, experiment, result, or blocker.
 
 - The preserved `D0/A4/S4/A8` RefCOCO seed-0 trainers are all healthy at update `2,000/5,000` with finite validation losses `5.6355/5.4471/5.4586/5.4424` respectively.
 - Atomic checkpoints were refreshed for all four jobs; no summary files exist yet because training is still in progress. No expansion or forbidden jobs were launched.
+
+## 2026-08-14 — RefCOCO seed-0 replication completed and audited
+
+- The preserved `D0/A4/S4/A8` RefCOCO UNC seed-0 jobs all reached update `5,000` and exited cleanly. Best validation losses were D0 `5.603853749`, A4 `5.341166992`, S4 `5.339118756`, and A8 `5.339440789`.
+- All four immutable `best.pt` checkpoints and `summary.json` files were present and readable. Peak allocated VRAM was `1.23/1.37/1.41/1.79 GiB` for D0/A4/S4/A8 respectively; the GPU was idle after completion.
+- Rechecked the locked Ref-Adv-s outputs: all 12 prediction tensors (`D0/A4/S4/A8 × seeds 0/1/2`) contain 1,142 rows at `tau = 0.8`; the per-example table has 1,142 rows, the slice table has 11 rows, and the bootstrap uses 10,000 replicates with seed `20260812`.
+- No RefCOCO seeds 1–2, RefCOCO+, CLIP, FineCops-Ref, or other expansion jobs were launched. The tracked completion digest is [refcoco_seed0_summary.md](results/refcoco/refcoco_seed0_summary.md); raw checkpoints and tensors remain on the persistent pod and stay out of Git.
