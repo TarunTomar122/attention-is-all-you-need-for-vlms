@@ -194,3 +194,8 @@ Append one dated entry for every material setup, experiment, result, or blocker.
 - Extracted all 4,313 required GQA images with resumable parallel HTTP ranges after the provider throttled individual requests; existing files were preserved across retries.
 - Prepared 9,605 positive FineCops examples. The manifest records 122 boxes clipped for a documented 1–2 pixel image-boundary rounding overflow; larger invalid boxes remain rejected.
 - Started the frozen SigLIP2 FineCops evaluation for A4/S4/A8 across seeds 0/1/2 at `tau = 0.8`; no training or test-time tuning is performed.
+
+## 2026-08-14 — CLIP control restarted with equivalent effective batch
+
+- The first CLIP attempt stopped before producing a checkpoint because the pod's Transformers/Torch safety check rejected the cached PyTorch `.bin` file. It produced no result artifact.
+- The control was restarted with cached safetensors weights and `batch_size=64, accumulate=1`, preserving the original effective batch of 64 and the 5,000-update budget. Completed SigLIP2 work was untouched.
