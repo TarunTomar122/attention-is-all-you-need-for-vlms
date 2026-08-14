@@ -10,12 +10,13 @@ from pathlib import Path
 from study import WORDS
 
 
-def prepare(annotation_path: Path, expression_path: Path, image_dir: Path, output: Path) -> tuple[int, str]:
+def prepare(annotation_path: Path, expression_path: Path, image_dir: Path, output: Path) -> tuple[int, str, int]:
     coco = json.loads(annotation_path.read_text())
     expressions = json.loads(expression_path.read_text())
     images = {int(row["id"]): row for row in coco["images"]}
     annotations = {int(row["image_id"]): row for row in coco["annotations"]}
     records: list[dict] = []
+    boundary_clamped = 0
     for key, expression_row in expressions.items():
         image_id = int(expression_row["id"])
         image = images[image_id]
@@ -27,9 +28,26 @@ def prepare(annotation_path: Path, expression_path: Path, image_dir: Path, outpu
         if not image_path.is_file():
             raise FileNotFoundError(image_path)
         x, y, width, height = map(float, annotation["bbox"])
-        box = [x, y, x + width, y + height]
-        if width <= 0 or height <= 0 or not (0 <= box[0] < box[2] <= image["width"] and 0 <= box[1] < box[3] <= image["height"]):
-            raise ValueError(f"invalid FineCops box for image {image_id}: {box}")
+        raw_box = [x, y, x + width, y + height]
+        overflow = max(
+            0.0,
+            -raw_box[0],
+            -raw_box[1],
+            raw_box[2] - image["width"],
+            raw_box[3] - image["height"],
+        )
+        if width <= 0 or height <= 0 or overflow > 2.0:
+            raise ValueError(f"invalid FineCops box for image {image_id}: {raw_box}")
+        box = [
+            max(0.0, min(raw_box[0], float(image["width"]))),
+            max(0.0, min(raw_box[1], float(image["height"]))),
+            max(0.0, min(raw_box[2], float(image["width"]))),
+            max(0.0, min(raw_box[3], float(image["height"]))),
+        ]
+        if box != raw_box:
+            boundary_clamped += 1
+        if not (box[0] < box[2] and box[1] < box[3]):
+            raise ValueError(f"invalid FineCops box for image {image_id}: {raw_box}")
         level = int(annotation["level"])
         tuple_type = str(annotation["tuple_type"])
         records.append({
@@ -43,6 +61,7 @@ def prepare(annotation_path: Path, expression_path: Path, image_dir: Path, outpu
             "height": int(image["height"]),
             "expression": expression,
             "box_xyxy": box,
+            "box_boundary_clamped": box != raw_box,
             "tags": [f"tuple_type:{tuple_type}"],
             "stratum": f"level_{level}",
             "compositional": level >= 2,
@@ -58,7 +77,7 @@ def prepare(annotation_path: Path, expression_path: Path, image_dir: Path, outpu
     payload = ("\n".join(json.dumps(row, sort_keys=True, separators=(",", ":")) for row in records) + "\n").encode()
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_bytes(payload)
-    return len(records), hashlib.sha256(payload).hexdigest()
+    return len(records), hashlib.sha256(payload).hexdigest(), boundary_clamped
 
 
 def main() -> None:
@@ -70,8 +89,8 @@ def main() -> None:
     args = parser.parse_args()
     if args.output.exists():
         raise FileExistsError(f"refusing to overwrite {args.output}")
-    count, digest = prepare(args.annotations, args.expressions, args.images, args.output)
-    print(json.dumps({"examples": count, "sha256": digest}))
+    count, digest, boundary_clamped = prepare(args.annotations, args.expressions, args.images, args.output)
+    print(json.dumps({"examples": count, "sha256": digest, "boundary_clamped": boundary_clamped}))
 
 
 if __name__ == "__main__":
