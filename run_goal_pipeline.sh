@@ -7,7 +7,7 @@ exec >> runs/goal-pipeline/pipeline.log 2>&1
 echo "$(date -Is) pipeline-start"
 
 # Serialize the GPU queue while the network transfer runs unattended.
-while pgrep -f '[w]get .*gqa-images.zip' >/dev/null || pgrep -f '[b]enchmark_efficiency.py' >/dev/null; do sleep 60; done
+while pgrep -f '[w]get .*gqa-images.zip' >/dev/null || pgrep -f '[b]enchmark_efficiency.py' >/dev/null || pgrep -f '[r]un.py evaluate' >/dev/null; do sleep 60; done
 test "$(stat -c%s /workspace/gqa-images.zip)" -ge 21817965542
 
 mkdir -p data/finecops/images
