@@ -56,8 +56,10 @@ def main() -> None:
         params = sum(parameter.numel() for parameter in decoder.parameters())
         macs = analytical_macs(variant, image_width, text_width, text_length)
         torch.cuda.empty_cache(); torch.cuda.reset_peak_memory_stats()
-        with torch.no_grad():
-            values = timed(lambda: decoder(image, text, mask), args.repeats, args.warmups)
+        def decoder_forward():
+            with torch.no_grad(), torch.autocast(device_type="cuda", dtype=torch.float16):
+                decoder(image, text, mask)
+        values = timed(decoder_forward, args.repeats, args.warmups)
         raw[variant] = {"trainable_parameters": params, "analytical_macs_per_example": macs, "analytical_flops_per_example": 2 * macs, "decoder_only": stats(values, args.batch_size), "decoder_only_peak_allocated_bytes": torch.cuda.max_memory_allocated()}
         del decoder
     # Full-pipeline timings include PIL/processor work plus frozen image/text encoders.
@@ -68,7 +70,8 @@ def main() -> None:
         def forward():
             with torch.no_grad():
                 image_now, text_now, mask_now, _, _ = encode(backbone, processor, records, device)
-                decoder(image_now, text_now, mask_now)
+                with torch.autocast(device_type="cuda", dtype=torch.float16):
+                    decoder(image_now, text_now, mask_now)
         values = timed(forward, max(8, args.repeats // 2), max(3, args.warmups // 2))
         full[variant] = {"full_pipeline": stats(values, args.batch_size), "full_pipeline_peak_allocated_bytes": torch.cuda.max_memory_allocated()}
         del decoder
