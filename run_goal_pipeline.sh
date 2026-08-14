@@ -13,7 +13,11 @@ test "$(stat -c%s /workspace/gqa-images.zip)" -ge 21817965542
 mkdir -p data/finecops/images
 if [ "$(find data/finecops/images -type f -name '*.jpg' | wc -l)" -lt 4313 ]; then
   mapfile -t entries < <(sed 's#^#images/#' data/finecops/gqa_needed.txt)
-  unzip -q -j /workspace/gqa-images.zip "${entries[@]}" -d data/finecops/images
+  unzip -q -j /workspace/gqa-images.zip "${entries[@]}" -d data/finecops/images || true
+  if [ "$(find data/finecops/images -type f -name '*.jpg' | wc -l)" -lt 4313 ]; then
+    rm -f data/finecops/images/*.jpg
+    python extract_finecops_images.py --archive /workspace/gqa-images.zip --list data/finecops/gqa_needed.txt --output data/finecops/images
+  fi
 fi
 if [ ! -f data/finecops-test.jsonl ]; then
   python prepare_finecops.py --annotations data/finecops/test_expression_pos_coco_format.json --expressions data/finecops/test_expression_pos.json --images data/finecops/images --output data/finecops-test.jsonl
