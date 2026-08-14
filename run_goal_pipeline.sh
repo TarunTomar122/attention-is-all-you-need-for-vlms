@@ -7,17 +7,19 @@ exec >> runs/goal-pipeline/pipeline.log 2>&1
 echo "$(date -Is) pipeline-start"
 
 # Serialize the GPU queue while the network transfer runs unattended.
-while pgrep -f '[w]get .*gqa-images.zip' >/dev/null || pgrep -f '[b]enchmark_efficiency.py' >/dev/null || pgrep -f '[r]un.py evaluate' >/dev/null; do sleep 60; done
-test "$(stat -c%s /workspace/gqa-images.zip)" -ge 21817965542
+while pgrep -f '[w]get .*gqa-images.zip' >/dev/null || pgrep -f '[s]tream_extract_gqa.py' >/dev/null || pgrep -f '[b]enchmark_efficiency.py' >/dev/null || pgrep -f '[r]un.py evaluate' >/dev/null; do sleep 60; done
 
 mkdir -p data/finecops/images
 if [ "$(find data/finecops/images -type f -name '*.jpg' | wc -l)" -lt 4313 ]; then
-  mapfile -t entries < <(sed 's#^#images/#' data/finecops/gqa_needed.txt)
-  unzip -q -j /workspace/gqa-images.zip "${entries[@]}" -d data/finecops/images || true
-  if [ "$(find data/finecops/images -type f -name '*.jpg' | wc -l)" -lt 4313 ]; then
-    rm -f data/finecops/images/*.jpg
-    python extract_finecops_images.py --archive /workspace/gqa-images.zip --list data/finecops/gqa_needed.txt --output data/finecops/images
+  if [ -f /workspace/gqa-images.zip ] && [ "$(stat -c%s /workspace/gqa-images.zip)" -ge 21817965542 ]; then
+    mapfile -t entries < <(sed 's#^#images/#' data/finecops/gqa_needed.txt)
+    unzip -q -j /workspace/gqa-images.zip "${entries[@]}" -d data/finecops/images || true
+    if [ "$(find data/finecops/images -type f -name '*.jpg' | wc -l)" -lt 4313 ]; then
+      rm -f data/finecops/images/*.jpg
+      python extract_finecops_images.py --archive /workspace/gqa-images.zip --list data/finecops/gqa_needed.txt --output data/finecops/images
+    fi
   fi
+  test "$(find data/finecops/images -type f -name '*.jpg' | wc -l)" -ge 4313
 fi
 if [ ! -f data/finecops-test.jsonl ]; then
   python prepare_finecops.py --annotations data/finecops/test_expression_pos_coco_format.json --expressions data/finecops/test_expression_pos.json --images data/finecops/images --output data/finecops-test.jsonl
