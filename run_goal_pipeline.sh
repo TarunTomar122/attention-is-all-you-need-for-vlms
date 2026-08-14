@@ -68,11 +68,17 @@ if [ -f runs/clip-control/refcocog-clip-A4-s0-test.pt ] && [ -f runs/clip-contro
   python analyze_clip_control.py --a4 runs/clip-control/refcocog-clip-A4-s0-test.pt --s4 runs/clip-control/refcocog-clip-S4-s0-test.pt --output runs/clip-control/clip_control_summary.json
 fi
 
-mkdir -p docs/results/finecops docs/results/efficiency docs/results/clip-control
+if [ -f runs/refcoco-eval/refcoco-A4-s0-testA.pt ] && [ -f runs/refcoco-eval/refcoco-A4-s0-testB.pt ] && [ -f runs/refcoco-eval/refcoco-S4-s0-testA.pt ] && [ -f runs/refcoco-eval/refcoco-S4-s0-testB.pt ]; then
+  python analyze_refcoco_eval.py --predictions runs/refcoco-eval --output runs/refcoco-eval/refcoco_seed0
+fi
+
+mkdir -p docs/results/finecops docs/results/efficiency docs/results/clip-control docs/results/refcoco
 cp runs/finecops-analysis/finecops_*.md runs/finecops-analysis/finecops_*.csv runs/finecops-analysis/finecops_*.json docs/results/finecops/ 2>/dev/null || true
 cp runs/finecops-analysis/*.png docs/results/finecops/ 2>/dev/null || true
 cp runs/efficiency/efficiency_table.csv runs/efficiency/efficiency_table.md runs/efficiency/measurements.json docs/results/efficiency/ 2>/dev/null || true
 cp runs/clip-control/clip_control_summary.* docs/results/clip-control/ 2>/dev/null || true
+cp runs/refcoco-eval/refcoco_seed0.* docs/results/refcoco/ 2>/dev/null || true
+python synthesize_paper_findings.py --root .
 cat >> docs/progress-log.md <<'EOF'
 
 ## 2026-08-14 — Publishable expansion pipeline completed
