@@ -59,7 +59,8 @@ python summarize_efficiency.py --input runs/efficiency/measurements.json --outpu
 for variant in A4 S4; do
   out="runs/clip-control/refcocog-clip-${variant}-s0"
   if [ ! -f "$out/best.pt" ]; then
-    python run.py train --train data/refcocog-train.jsonl --val data/refcocog-val.jsonl --output "$out" --backbone clip --variant "$variant" --seed 0 --learning-rate 0.0003 --batch-size 16 --accumulate 4 --steps 5000 --warmup-steps 250 --eval-every 500
+    # Keep the same effective batch (64) while reducing frozen-backbone microbatch overhead.
+    python run.py train --train data/refcocog-train.jsonl --val data/refcocog-val.jsonl --output "$out" --backbone clip --variant "$variant" --seed 0 --learning-rate 0.0003 --batch-size 64 --accumulate 1 --steps 5000 --warmup-steps 250 --eval-every 500
   fi
   test_output="runs/clip-control/refcocog-clip-${variant}-s0-test.pt"
   if [ ! -f "$test_output" ]; then
