@@ -188,3 +188,19 @@ Append one dated entry for every material setup, experiment, result, or blocker.
 - All four immutable `best.pt` checkpoints and `summary.json` files were present and readable. Peak allocated VRAM was `1.23/1.37/1.41/1.79 GiB` for D0/A4/S4/A8 respectively; the GPU was idle after completion.
 - Rechecked the locked Ref-Adv-s outputs: all 12 prediction tensors (`D0/A4/S4/A8 × seeds 0/1/2`) contain 1,142 rows at `tau = 0.8`; the per-example table has 1,142 rows, the slice table has 11 rows, and the bootstrap uses 10,000 replicates with seed `20260812`.
 - No RefCOCO seeds 1–2, RefCOCO+, CLIP, FineCops-Ref, or other expansion jobs were launched. The tracked completion digest is [refcoco_seed0_summary.md](results/refcoco/refcoco_seed0_summary.md); raw checkpoints and tensors remain on the persistent pod and stay out of Git.
+
+## 2026-08-14 — FineCops extraction and manifest prepared
+
+- Extracted all 4,313 required GQA images with resumable parallel HTTP ranges after the provider throttled individual requests; existing files were preserved across retries.
+- Prepared 9,605 positive FineCops examples. The manifest records 122 boxes clipped for a documented 1–2 pixel image-boundary rounding overflow; larger invalid boxes remain rejected.
+- Started the frozen SigLIP2 FineCops evaluation for A4/S4/A8 across seeds 0/1/2 at `tau = 0.8`; no training or test-time tuning is performed.
+
+## 2026-08-14 — CLIP control restarted with equivalent effective batch
+
+- The first CLIP attempt stopped before producing a checkpoint because the pod's Transformers/Torch safety check rejected the cached PyTorch `.bin` file. It produced no result artifact.
+- The control was restarted with cached safetensors weights and `batch_size=64, accumulate=1`, preserving the original effective batch of 64 and the 5,000-update budget. Completed SigLIP2 work was untouched.
+
+## 2026-08-14 — Publishable expansion pipeline completed
+
+- FineCops-Ref positive-test evaluation, decoder efficiency, and the minimal one-seed CLIP-family control were run from immutable existing checkpoints and frozen `tau = 0.8`; raw run artifacts remain under `runs/`.
+- FineCops slices use only official level and tuple-type metadata; no LLM-derived labels or test-time tuning were added. Efficiency reports cached-decoder and full-pipeline measurements separately.

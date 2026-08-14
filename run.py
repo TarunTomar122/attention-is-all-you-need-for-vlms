@@ -133,9 +133,12 @@ def load_backbone(key: str, device: torch.device):
     from transformers import AutoModel, AutoProcessor
 
     model_id, revision = MODELS[key]
+    local_clip = Path("data/clip-backbone")
+    if key == "clip" and local_clip.exists():
+        model_id, revision = str(local_clip), None
     processor = AutoProcessor.from_pretrained(model_id, revision=revision)
     dtype = torch.float16 if device.type == "cuda" else torch.float32
-    backbone = AutoModel.from_pretrained(model_id, revision=revision, torch_dtype=dtype)
+    backbone = AutoModel.from_pretrained(model_id, revision=revision, torch_dtype=dtype, use_safetensors=True)
     backbone.requires_grad_(False).eval().to(device)
     return backbone, processor
 

@@ -135,3 +135,20 @@ Append dated decisions here; include the evidence and what would change the deci
 - **Evidence:** D0/A4/S4/A8 all reached update `5,000`; the final best validation losses were `5.603853749`, `5.341166992`, `5.339118756`, and `5.339440789`. The four checkpoint/summary pairs passed a read audit, and no forbidden jobs were active.
 - **Reason:** This closes the requested operational replication while keeping the scientific scope fixed around the already completed Ref-Adv-s failure-boundary analysis. The Ref-Adv-s integrity audit also passed: 12 tensors × 1,142 examples, frozen `tau = 0.8`, and the predeclared 10,000-replicate clustered bootstrap.
 - **Next:** Use the existing Case A recommendation—FineCops-Ref plus decoder-efficiency measurement—as the next controlled experiment only after explicit authorization; do not spend more GPU time in this run.
+
+## 2026-08-14 — Normalize only FineCops boundary-rounding overflow
+
+- **Decision:** Clip FineCops target boxes to the recorded image bounds only when the COCO box exceeds a bound by at most 2 pixels; reject larger or non-positive boxes.
+- **Evidence:** The prepared official positive split contains 122 such boundary overflows (maximum 2 pixels), caused by rounded image dimensions. The normalization is recorded per example as `box_boundary_clamped` and in the manifest digest output.
+- **Reason:** This preserves the intended boundary-touching target while making the evaluation contract well-defined; it does not invent labels, alter expressions, or tune on the test set.
+
+## 2026-08-14 — Keep the CLIP control computationally bounded
+
+- **Decision:** Run the same 64-example effective batch as `16 × 4` using `64 × 1` microbatching for the one-seed CLIP control.
+- **Reason:** The frozen CLIP-L backbone made repeated small microbatches CPU/input-bound; the effective optimization batch, 5,000 updates, learning rate, decoder, loss, and validation schedule are unchanged.
+- **Loader note:** The pod's Transformers version rejected Torch 2.4 `.bin` loading, so the already-cached CLIP safetensors checkpoint is loaded from a local immutable cache path. No model weights or completed SigLIP2 runs were changed.
+
+## 2026-08-14 — Keep the publishable expansion bounded
+
+- **Decision:** Stop after FineCops-Ref, decoder efficiency, and one matched CLIP-family control; do not launch RefCOCO+, extra classic seeds, or another backbone automatically.
+- **Reason:** These three measurements directly test the remaining failure-boundary, efficiency, and backbone-transfer questions while preserving the completed evidence.

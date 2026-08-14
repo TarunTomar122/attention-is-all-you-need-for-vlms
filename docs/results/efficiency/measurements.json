@@ -1,0 +1,94 @@
+{
+  "protocol": {
+    "backbone": "siglip2",
+    "checkpoint": "runs/day2-local/refcocog-siglip2-A4-s0/best.pt",
+    "batch_size": 16,
+    "repeats": 40,
+    "warmups": 8,
+    "cuda_synchronize": true,
+    "fixed_manifest_prefix": "data/refcocog-test.jsonl"
+  },
+  "variants": {
+    "A4": {
+      "trainable_parameters": 2639104,
+      "analytical_macs_per_example": 501694464,
+      "analytical_flops_per_example": 1003388928,
+      "decoder_only": {
+        "mean_seconds": 0.006714142783312127,
+        "std_seconds": 2.8777141725884405e-05,
+        "median_seconds": 0.006711033987812698,
+        "p95_seconds": 0.0067599560134112835,
+        "examples_per_second": 2383.0294523625103
+      },
+      "decoder_only_peak_allocated_bytes": 845386240,
+      "full_pipeline": {
+        "mean_seconds": 0.20934703650418668,
+        "std_seconds": 0.021863920271089354,
+        "median_seconds": 0.20246060844510794,
+        "p95_seconds": 0.2698789080604911,
+        "examples_per_second": 76.4281179575237
+      },
+      "full_pipeline_peak_allocated_bytes": 986584064,
+      "relative_to_s4": {
+        "parameters_percent": -44.36289060391818,
+        "macs_percent": -0.41627369995772545,
+        "decoder_latency_percent": -10.057051766116542,
+        "full_pipeline_latency_percent": -0.408089635532749
+      }
+    },
+    "S4": {
+      "trainable_parameters": 4743424,
+      "analytical_macs_per_example": 503791616,
+      "analytical_flops_per_example": 1007583232,
+      "decoder_only": {
+        "mean_seconds": 0.007464890705887228,
+        "std_seconds": 0.0002570788700029524,
+        "median_seconds": 0.007420276990160346,
+        "p95_seconds": 0.007472594967111945,
+        "examples_per_second": 2143.3669467366094
+      },
+      "decoder_only_peak_allocated_bytes": 856956928,
+      "full_pipeline": {
+        "mean_seconds": 0.21020486075431108,
+        "std_seconds": 0.01883919878297353,
+        "median_seconds": 0.20460581546649337,
+        "p95_seconds": 0.26299762492999434,
+        "examples_per_second": 76.1162227295063
+      },
+      "full_pipeline_peak_allocated_bytes": 995001344,
+      "relative_to_s4": {
+        "parameters_percent": 0.0,
+        "macs_percent": 0.0,
+        "decoder_latency_percent": 0.0,
+        "full_pipeline_latency_percent": 0.0
+      }
+    },
+    "A8": {
+      "trainable_parameters": 4752640,
+      "analytical_macs_per_example": 839598080,
+      "analytical_flops_per_example": 1679196160,
+      "decoder_only": {
+        "mean_seconds": 0.012703193898778409,
+        "std_seconds": 3.480199001486426e-05,
+        "median_seconds": 0.012704086489975452,
+        "p95_seconds": 0.012761906953528523,
+        "examples_per_second": 1259.5257639528454
+      },
+      "decoder_only_peak_allocated_bytes": 858051072,
+      "full_pipeline": {
+        "mean_seconds": 0.1999129643314518,
+        "std_seconds": 0.0005438810373669114,
+        "median_seconds": 0.20000326144509017,
+        "p95_seconds": 0.200360574061051,
+        "examples_per_second": 80.03482942443048
+      },
+      "full_pipeline_peak_allocated_bytes": 995038208,
+      "relative_to_s4": {
+        "parameters_percent": 0.19429003184197047,
+        "macs_percent": 66.65582620573028,
+        "decoder_latency_percent": 70.17253700392376,
+        "full_pipeline_latency_percent": -4.896126752696029
+      }
+    }
+  }
+}
