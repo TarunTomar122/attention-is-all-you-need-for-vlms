@@ -199,3 +199,8 @@ Append one dated entry for every material setup, experiment, result, or blocker.
 
 - The first CLIP attempt stopped before producing a checkpoint because the pod's Transformers/Torch safety check rejected the cached PyTorch `.bin` file. It produced no result artifact.
 - The control was restarted with cached safetensors weights and `batch_size=64, accumulate=1`, preserving the original effective batch of 64 and the 5,000-update budget. Completed SigLIP2 work was untouched.
+
+## 2026-08-14 — Publishable expansion pipeline completed
+
+- FineCops-Ref positive-test evaluation, decoder efficiency, and the minimal one-seed CLIP-family control were run from immutable existing checkpoints and frozen `tau = 0.8`; raw run artifacts remain under `runs/`.
+- FineCops slices use only official level and tuple-type metadata; no LLM-derived labels or test-time tuning were added. Efficiency reports cached-decoder and full-pipeline measurements separately.

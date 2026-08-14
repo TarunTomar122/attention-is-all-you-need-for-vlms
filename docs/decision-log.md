@@ -147,3 +147,8 @@ Append dated decisions here; include the evidence and what would change the deci
 - **Decision:** Run the same 64-example effective batch as `16 × 4` using `64 × 1` microbatching for the one-seed CLIP control.
 - **Reason:** The frozen CLIP-L backbone made repeated small microbatches CPU/input-bound; the effective optimization batch, 5,000 updates, learning rate, decoder, loss, and validation schedule are unchanged.
 - **Loader note:** The pod's Transformers version rejected Torch 2.4 `.bin` loading, so the already-cached CLIP safetensors checkpoint is loaded from a local immutable cache path. No model weights or completed SigLIP2 runs were changed.
+
+## 2026-08-14 — Keep the publishable expansion bounded
+
+- **Decision:** Stop after FineCops-Ref, decoder efficiency, and one matched CLIP-family control; do not launch RefCOCO+, extra classic seeds, or another backbone automatically.
+- **Reason:** These three measurements directly test the remaining failure-boundary, efficiency, and backbone-transfer questions while preserving the completed evidence.
