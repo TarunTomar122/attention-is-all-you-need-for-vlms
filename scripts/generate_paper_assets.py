@@ -105,24 +105,24 @@ def write_table(data: dict) -> None:
 
 
 def method_overview() -> None:
-    fig, axis = plt.subplots(figsize=(9.2, 3.1)); axis.set_axis_off(); axis.set(xlim=(0, 10), ylim=(0, 4.2))
+    fig, axis = plt.subplots(figsize=(10.8, 3.4)); axis.set_axis_off(); axis.set(xlim=(0, 13), ylim=(0, 4.2))
     def box(x: float, y: float, width: float, height: float, label: str, color: str = "#f8fafc") -> None:
         axis.add_patch(Rectangle((x, y), width, height, facecolor=color, edgecolor=COLORS["ink"], linewidth=1.1))
-        axis.text(x + width / 2, y + height / 2, label, ha="center", va="center", fontsize=9, wrap=True)
+        axis.text(x + width / 2, y + height / 2, label, ha="center", va="center", fontsize=8.7, wrap=True)
     def arrow(x1: float, y1: float, x2: float, y2: float) -> None:
-        axis.add_patch(FancyArrowPatch((x1, y1), (x2, y2), arrowstyle="->", mutation_scale=12, linewidth=1.1, color=COLORS["muted"]))
-    box(.2, 1.5, 1.3, 1.1, "Image +\nexpression")
-    box(2.0, 1.5, 1.55, 1.1, "Frozen VLM\nimage/text tokens", "#eef6ff")
-    box(4.1, 2.45, 1.7, .85, "A4: 4× text/image\nattention", "#eaf3ff")
-    box(4.1, 1.30, 1.7, .85, "S4: same attention\n+ 4× FFN", "#fff0f0")
-    box(4.1, .15, 1.7, .85, "A8: 8× text/image\nattention", "#ebfaef")
-    box(6.45, 1.5, 1.55, 1.1, "Shared patch\nattention readout", "#f8fafc")
-    box(8.5, 1.5, 1.25, 1.1, "Patch heatmap\n→ one box")
-    arrow(1.5, 2.05, 2.0, 2.05)
-    for y in (2.88, 1.73, .58): arrow(3.55, 2.05, 4.1, y)
-    for y in (2.88, 1.73, .58): arrow(5.8, y, 6.45, 2.05)
-    arrow(8.0, 2.05, 8.5, 2.05)
-    axis.text(4.95, 3.85, "Train decoder only; freeze every backbone parameter", ha="center", fontsize=10, weight="bold", color=COLORS["ink"])
+        axis.add_patch(FancyArrowPatch((x1, y1), (x2, y2), arrowstyle="->", mutation_scale=12, linewidth=1.1, color=COLORS["muted"], shrinkA=3, shrinkB=6))
+    box(.3, 1.45, 1.5, 1.2, "Image\n+ expression")
+    box(2.2, 1.45, 1.8, 1.2, "Frozen VLM\nfeatures", "#eef6ff")
+    box(4.8, 2.55, 2.3, .95, "A4\n4 attention blocks", "#eaf3ff")
+    box(4.8, 1.35, 2.3, .95, "S4\n4 attention + FFN blocks", "#fff0f0")
+    box(4.8, .15, 2.3, .95, "A8\n8 attention blocks", "#ebfaef")
+    box(8.3, 1.45, 1.9, 1.2, "Shared patch\nreadout", "#f8fafc")
+    box(10.9, 1.45, 1.7, 1.2, "Patch heatmap\nto box")
+    arrow(1.8, 2.05, 2.2, 2.05)
+    for y in (3.025, 1.825, .625): arrow(4.0, 2.05, 4.8, y)
+    for y in (3.025, 1.825, .625): arrow(7.1, y, 8.3, 2.05)
+    arrow(10.2, 2.05, 10.9, 2.05)
+    axis.text(6.45, 3.92, "Train decoder only; freeze every backbone parameter", ha="center", fontsize=10, weight="bold", color=COLORS["ink"])
     save(fig, "method-overview")
 
 
