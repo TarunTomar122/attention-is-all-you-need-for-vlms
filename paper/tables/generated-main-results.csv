@@ -1,0 +1,5 @@
+Evaluation,A4-S4 IoU@0.5 (pp),Interval,Reading
+RefCOCOg direct (3 seeds),+0.26,"90% CI [-0.33, +0.84]",Direct-retention gate passed; interaction not confirmed
+Ref-Adv-s overall (3 seeds),+0.79,"95% CI [+0.06, +1.52]",No monotonic hard-slice boundary
+FineCops-Ref overall (3 seeds),-0.52,"95% CI [-0.95, -0.12]",A8-S4 = +0.26 pp
+CLIP RefCOCOg (1 seed),+0.18,descriptive only,Second frozen backbone

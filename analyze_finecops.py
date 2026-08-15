@@ -12,7 +12,6 @@ import numpy as np
 import torch
 
 
-SEED = 20260814
 REPLICATES = 10_000
 VARIANTS = ("A4", "S4", "A8")
 METRICS = ("acc_iou_0.5", "iou", "pointing", "target_mass")
@@ -36,21 +35,21 @@ def load_variant(paths: list[Path]) -> tuple[list[dict], dict[str, torch.Tensor]
     return reference, {metric: torch.stack([run["metrics"][metric].float() for run in runs]).mean(0) for metric in METRICS}
 
 
-def bootstrap(difference: torch.Tensor, image_ids: list[str], indices: list[int]) -> tuple[float, tuple[float, float]]:
+def bootstrap(difference: torch.Tensor, image_ids: list[str], indices: list[int], seed: int) -> tuple[float, tuple[float, float]]:
     clusters: dict[str, list[int]] = defaultdict(list)
     for index in indices:
         clusters[image_ids[index]].append(index)
     cluster_means = [float(difference[indexes].mean()) for indexes in clusters.values()]
     observed = float(difference[indices].mean())
     # Vectorized cluster resampling avoids millions of Python-level random calls.
-    rng = np.random.default_rng(SEED)
+    rng = np.random.default_rng(seed)
     samples = rng.choice(cluster_means, size=(REPLICATES, len(cluster_means)), replace=True).mean(axis=1)
     return observed, interval(samples)
 
 
 def write_csv(path: Path, rows: list[dict]) -> None:
     with path.open("w", newline="") as handle:
-        writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
+        writer = csv.DictWriter(handle, fieldnames=list(rows[0]), lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
 
@@ -75,37 +74,70 @@ def plot(out: Path, rows: list[dict]) -> None:
     axis.grid(alpha=0.25); axis.legend(); fig.tight_layout(); fig.savefig(out / "finecops_delta_by_level.png", dpi=180); plt.close(fig)
 
 
+def load_per_example(path: Path) -> tuple[list[dict], dict[str, dict], dict[str, dict[str, torch.Tensor]]]:
+    """Reload committed seed-averaged rows to reproduce a bootstrap without model inference."""
+    with path.open(newline="") as handle:
+        rows = list(csv.DictReader(handle))
+    if not rows:
+        raise ValueError("per-example table is empty")
+    reference = [{"id": row["id"], "image_id": row["image_id"]} for row in rows]
+    native = {
+        row["id"]: {
+            "id": row["id"],
+            "expression": row["expression"],
+            "finecops_level": row["finecops_level"],
+            "finecops_tuple_type": row["finecops_tuple_type"],
+        }
+        for row in rows
+    }
+    if len(native) != len(rows):
+        raise ValueError("per-example table has duplicate IDs")
+    loaded = {
+        variant: {metric: torch.tensor([float(row[f"{variant}_{metric}"]) for row in rows]) for metric in METRICS}
+        for variant in VARIANTS
+    }
+    return reference, native, loaded
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--data", type=Path, required=True)
-    parser.add_argument("--predictions", type=Path, required=True)
+    parser.add_argument("--data", type=Path)
+    source = parser.add_mutually_exclusive_group(required=True)
+    source.add_argument("--predictions", type=Path)
+    source.add_argument("--per-example", type=Path, help="Committed seed-averaged table; reruns statistics only.")
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--seed", type=int, default=20260812)
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=True)
-    reference = None
-    loaded: dict[str, dict[str, torch.Tensor]] = {}
-    for variant in VARIANTS:
-        paths = [args.predictions / f"finecops-siglip2-{variant}-s{seed}.pt" for seed in (0, 1, 2)]
-        current, metrics = load_variant(paths)
-        reference = current if reference is None else reference
-        if current != reference:
-            raise ValueError("prediction IDs differ across variants")
-        loaded[variant] = metrics
-    native = {row["id"]: row for row in (json.loads(line) for line in args.data.read_text().splitlines() if line)}
-    if set(native) != {row["id"] for row in reference}:
-        raise ValueError("FineCops manifest IDs do not match predictions")
+    if args.per_example:
+        reference, native, loaded = load_per_example(args.per_example)
+    else:
+        if args.data is None:
+            raise ValueError("--data is required with --predictions")
+        reference = None
+        loaded = {}
+        for variant in VARIANTS:
+            paths = [args.predictions / f"finecops-siglip2-{variant}-s{seed}.pt" for seed in (0, 1, 2)]
+            current, metrics = load_variant(paths)
+            reference = current if reference is None else reference
+            if current != reference:
+                raise ValueError("prediction IDs differ across variants")
+            loaded[variant] = metrics
+        native = {row["id"]: row for row in (json.loads(line) for line in args.data.read_text().splitlines() if line)}
+        if set(native) != {row["id"] for row in reference}:
+            raise ValueError("FineCops manifest IDs do not match predictions")
     image_ids = [row["image_id"] for row in reference]
     slices: dict[str, list[int]] = {"overall": list(range(len(reference)))}
     for field, prefix in (("finecops_level", "level"), ("finecops_tuple_type", "tuple_type")):
         for value in sorted({native[row["id"]][field] for row in reference}, key=str):
             slices[f"{prefix}_{value}"] = [i for i, row in enumerate(reference) if native[row["id"]][field] == value]
     differences = {"a4_s4": loaded["A4"]["acc_iou_0.5"] - loaded["S4"]["acc_iou_0.5"], "a8_s4": loaded["A8"]["acc_iou_0.5"] - loaded["S4"]["acc_iou_0.5"]}
-    rows = []; bootstrap_json = {"protocol": {"seed": SEED, "replicates": REPLICATES, "cluster": "image_id", "official_fields": ["finecops_level", "finecops_tuple_type"]}, "slices": {}}
+    rows = []; bootstrap_json = {"protocol": {"seed": args.seed, "replicates": REPLICATES, "cluster": "image_id", "official_fields": ["finecops_level", "finecops_tuple_type"]}, "slices": {}}
     for name, indices in slices.items():
         row = {"slice": name, "n": len(indices)}
         for variant in VARIANTS: row[variant] = float(loaded[variant]["acc_iou_0.5"][indices].mean())
         row["delta_a4_s4"] = row["A4"] - row["S4"]; row["delta_a8_s4"] = row["A8"] - row["S4"]
-        a4, a4_ci = bootstrap(differences["a4_s4"], image_ids, indices); a8, a8_ci = bootstrap(differences["a8_s4"], image_ids, indices)
+        a4, a4_ci = bootstrap(differences["a4_s4"], image_ids, indices, args.seed); a8, a8_ci = bootstrap(differences["a8_s4"], image_ids, indices, args.seed)
         row.update({"a4_s4_ci95_low": a4_ci[0], "a4_s4_ci95_high": a4_ci[1], "a8_s4_ci95_low": a8_ci[0], "a8_s4_ci95_high": a8_ci[1]})
         rows.append(row); bootstrap_json["slices"][name] = {"n": len(indices), "a4_s4": a4, "a4_s4_ci95": list(a4_ci), "a8_s4": a8, "a8_s4_ci95": list(a8_ci)}
     per_example = []
@@ -114,7 +146,9 @@ def main() -> None:
         for variant in VARIANTS:
             for metric in METRICS: row[f"{variant}_{metric}"] = float(loaded[variant][metric][i])
         row["A4_minus_S4"] = float(differences["a4_s4"][i]); row["A8_minus_S4"] = float(differences["a8_s4"][i]); per_example.append(row)
-    write_csv(args.output / "finecops_per_example.csv", per_example); write_csv(args.output / "finecops_slices.csv", rows); (args.output / "finecops_bootstrap.json").write_text(json.dumps(bootstrap_json, indent=2) + "\n"); plot(args.output, rows)
+    if not args.per_example:
+        write_csv(args.output / "finecops_per_example.csv", per_example)
+    write_csv(args.output / "finecops_slices.csv", rows); (args.output / "finecops_bootstrap.json").write_text(json.dumps(bootstrap_json, indent=2) + "\n"); plot(args.output, rows)
     overall = next(row for row in rows if row["slice"] == "overall"); level3 = next(row for row in rows if row["slice"] == "level_3")
     overall_loss = overall["a4_s4_ci95_high"] < 0
     level3_loss = level3["a4_s4_ci95_high"] < 0
@@ -131,7 +165,7 @@ def main() -> None:
         "Case B": "A4 has a confidence interval below zero overall and A8 closes the observed gap; the level-3 slice itself is not a confirmed monotonic boundary.",
         "Case C": "A4 continues to match S4 overall, so no FFN failure boundary is supported.",
     }[case]
-    summary = ["# FineCops-Ref positive-test summary", "", "Protocol: official positive test split, frozen SigLIP2 RefCOCOg checkpoints, three decoder seeds, tau = 0.8, and image-clustered bootstrap (10,000 replicates; seed 20260814).", "", "## Overall metrics", "", "| Model | IoU@0.5 | Mean IoU | Pointing | Target mass |", "| --- | ---: | ---: | ---: | ---: |"]
+    summary = ["# FineCops-Ref positive-test summary", "", f"Protocol: official positive test split, frozen SigLIP2 RefCOCOg checkpoints, three decoder seeds, tau = 0.8, and image-clustered bootstrap (10,000 replicates; seed {args.seed}).", "", "## Overall metrics", "", "| Model | IoU@0.5 | Mean IoU | Pointing | Target mass |", "| --- | ---: | ---: | ---: | ---: |"]
     for variant in VARIANTS: summary.append(f"| {variant} | {100*float(loaded[variant]['acc_iou_0.5'].mean()):.2f}% | {float(loaded[variant]['iou'].mean()):.4f} | {100*float(loaded[variant]['pointing'].mean()):.2f}% | {float(loaded[variant]['target_mass'].mean()):.4f} |")
     summary += [f"| A4 − S4 IoU@0.5 | {100*overall['delta_a4_s4']:+.2f} pp | — | — | — |", f"| A8 − S4 IoU@0.5 | {100*overall['delta_a8_s4']:+.2f} pp | — | — | — |", "", "## Official slices", "", "| Slice | N | A4 | S4 | A8 | A4−S4 | A8−S4 | A4−S4 95% CI |", "| --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |"]
     for row in rows: summary.append(f"| {row['slice']} | {row['n']} | {100*row['A4']:.2f}% | {100*row['S4']:.2f}% | {100*row['A8']:.2f}% | {100*row['delta_a4_s4']:+.2f} pp | {100*row['delta_a8_s4']:+.2f} pp | [{100*row['a4_s4_ci95_low']:+.2f}, {100*row['a4_s4_ci95_high']:+.2f}] pp |")

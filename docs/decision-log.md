@@ -152,3 +152,10 @@ Append dated decisions here; include the evidence and what would change the deci
 
 - **Decision:** Stop after FineCops-Ref, decoder efficiency, and one matched CLIP-family control; do not launch RefCOCO+, extra classic seeds, or another backbone automatically.
 - **Reason:** These three measurements directly test the remaining failure-boundary, efficiency, and backbone-transfer questions while preserving the completed evidence.
+
+## 2026-08-15 — Correct the FineCops bootstrap seed and freeze experiments
+
+- **Decision:** Regenerate only the committed FineCops bootstrap artifacts with the locked seed `20260812`, then freeze the experimental phase.
+- **Evidence:** The original FineCops analysis used `20260814` despite the evaluation contract fixing `20260812`. The committed 9,605-row per-example table stores the already averaged three-seed prediction metrics and official labels, so it exactly supports a statistics-only rerun. The corrected overall A4−S4 result is `−0.52 pp`, 95% CI `[−0.95, −0.12]`; A8−S4 is `+0.26 pp`.
+- **Scope:** No weights, data rows, predictions, `tau = 0.8`, thresholds, or inference are changed. The only changed randomness is the preregistered bootstrap RNG seed and its derived intervals/plots.
+- **Consequence:** The paper frames the result as capacity reallocation in a frozen-VLM grounding decoder, not as evidence that FFNs are generally unnecessary or that a monotonic failure boundary was found.

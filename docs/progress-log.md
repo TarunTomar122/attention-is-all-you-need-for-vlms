@@ -204,3 +204,9 @@ Append one dated entry for every material setup, experiment, result, or blocker.
 
 - FineCops-Ref positive-test evaluation, decoder efficiency, and the minimal one-seed CLIP-family control were run from immutable existing checkpoints and frozen `tau = 0.8`; raw run artifacts remain under `runs/`.
 - FineCops slices use only official level and tuple-type metadata; no LLM-derived labels or test-time tuning were added. Efficiency reports cached-decoder and full-pipeline measurements separately.
+
+## 2026-08-15 — FineCops contract correction and paper freeze
+
+- Regenerated FineCops bootstrap JSON, summary, interpretation, slices, and plots with the evaluation contract's seed `20260812`, using the committed three-seed per-example table. No model, checkpoint, prediction, or evaluation row reran.
+- The corrected point estimates are unchanged: A4/S4/A8 are `27.01%/27.54%/27.79%` IoU@0.5; A4−S4 is `−0.52 pp` (95% CI `[−0.95, −0.12]`) and A8−S4 is `+0.26 pp`.
+- Froze the experimental record and began the paper package. No further model training is scheduled.

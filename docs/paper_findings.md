@@ -11,7 +11,7 @@ The study should distinguish the overall paired comparison from the official lev
 ## Evidence by benchmark
 
 - **RefCOCOg:** three-seed result is already versioned in `docs/results/refcocog-three-seed-summary.md`. Direct A4−S4 retention was +0.26 pp (90% CI −0.33 to +0.84); the logical interaction gate was not confirmed.
-- **RefCOCO:** the frozen seed-0 held-out evaluation gives testA A4/S4/A8 IoU@0.5 of 72.65/71.22/73.11% and testB 63.95/63.75/64.81%. This is a useful replication snapshot, not a three-seed confirmatory result; the checkpoint audit and full metrics are in `docs/results/refcoco/refcoco_seed0.md`.
+- **RefCOCO:** the current versioned completion is a seed-0 training/checkpoint audit in `docs/results/refcoco/refcoco_seed0_summary.md`; it is not a three-seed confirmatory test result.
 - **Ref-Adv-s:** A4 8.11% vs S4 7.33% IoU@0.5, A8 7.91%, with A4−S4 +0.79 pp (95% CI +0.06 to +1.52). The prepared length/distractor slices did not reveal an A4 failure boundary.
 - **FineCops-Ref:** official positive-test levels and tuple types are reported without invented semantic labels. This is the primary controlled compositional difficulty test for an FFN advantage.
 

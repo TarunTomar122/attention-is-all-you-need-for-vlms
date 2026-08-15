@@ -1,6 +1,6 @@
-# GPU-readiness completion audit
+# Experimental completion audit
 
-Status: seed-0 full-budget pair complete; held-out evaluation pending
+Status: experimental phase frozen; paper preparation in progress
 
 ## Complete and locally verified
 
@@ -16,15 +16,14 @@ Status: seed-0 full-budget pair complete; held-out evaluation pending
 | Minimal implementation | `study.py`, preparation scripts, `run.py`, `baseline.py`, `select_mass.py`, and `analyze.py` cover the complete experiment path |
 | CPU verification | `python3 test_study.py` passes; a synthetic three-seed paired analysis also passes |
 | Reproducible execution | [GPU runbook](gpu-runbook.md) gives exact bootstrap, data, smoke, pilot, matrix, evaluation, control, and analysis commands |
-| Backup | Local `main` and GitHub `origin/main` are identical at the audited commit |
+| Bootstrap contract | FineCops statistics and plots regenerated with the locked image-clustered bootstrap seed `20260812`; no model or inference reran |
 
-## Intentionally pending GPU evidence
+## Intentionally out of scope
 
-- clean-environment installation on Ubuntu/CUDA;
-- pinned backbone weight download and exact 576-patch assertion;
-- final full-matrix training results and measured latency;
-- in-domain test, control, OOD, and replication results;
-- final paired statistical analysis and interpretation gates.
+- RefCOCO and CLIP controls are seed-0/one-seed descriptive replications, not new three-seed confirmation claims.
+- RefCOCO+ was deliberately not launched; it would add cost without a sharper test of the observed conclusion.
+- FineCops level-3 and small tuple-type slices remain noisy; they do not establish a monotonic difficulty boundary.
+- The study does not test backbone fine-tuning, multiple queries, segmentation, or a fully attention-only VLM.
 
 ## Completed GPU evidence
 
@@ -32,10 +31,13 @@ Status: seed-0 full-budget pair complete; held-out evaluation pending
 - All 82,783 COCO train2014 images and the RefCOCOg train/validation manifests were prepared and verified on the pod.
 - CUDA smoke run completed with finite loss, checkpoint metadata, and 1.28 GiB peak allocated VRAM.
 - Six-run learning-rate pilot completed; `3e-4` had the lowest paired mean validation loss (`5.8088`).
-- Full-budget `A4`/`S4` seed-0 pair completed; both checkpoints and summaries were verified.
-- RefCOCOg validation evaluation completed without test access; the frozen heatmap mass is `0.8`, and both variants achieved about `0.542` IoU@0.5.
+- RefCOCOg three-seed held-out evaluation and modality shuffles completed at frozen `tau = 0.8`.
+- RefCOCO seed-0 `D0/A4/S4/A8` replication completed with immutable checkpoints and held-out outputs.
+- Ref-Adv-s evaluation-only analysis completed for all three RefCOCOg-trained seeds; no Ref-Adv training or tuning occurred.
+- FineCops-Ref evaluation completed for A4/S4/A8 across three seeds. The locked seed-`20260812` bootstrap gives A4−S4 `−0.52 pp` (95% CI `[−0.95, −0.12]`) and A8−S4 `+0.26 pp`.
+- Decoder and full-pipeline latency were measured; the CLIP-family one-seed control completed.
 
-These are execution results, not unresolved design choices. Held-out test evaluation remains governed by the locked runbook and must not retune the mass or taxonomy.
+These are completed execution results. No further GPU experiment is authorized by this audit.
 
 ## Audit checks run on 2026-08-12
 
@@ -46,8 +48,10 @@ ok: paired image-clustered analysis fixture
 
 The current audit records both local readiness and the bounded GPU evidence gathered so far; final test claims remain blocked until the locked evaluation protocol is completed.
 
-## Day-one stop state
+## Frozen result record
 
-- Completed: seed-0 held-out A4/S4 test, modality shuffles, uniform and position-prior controls, and pushed summary logs.
-- Partial: seed-1 and seed-2 A4 checkpoints exist on the persistent pod; paired S4 checkpoints and held-out exports remain pending.
-- Safe stop: training sessions were interrupted at the planned cutoff and the GPU is idle. No partial checkpoint is considered a final result.
+- Primary evidence: [`results/refcocog-three-seed-summary.md`](results/refcocog-three-seed-summary.md).
+- Adversarial evidence: [`results/refadv/`](results/refadv/).
+- Controlled compositional evidence: [`results/finecops/`](results/finecops/).
+- Efficiency and second-backbone controls: [`results/efficiency/`](results/efficiency/) and [`results/clip-control/`](results/clip-control/).
+- Interpretation boundary: [`paper_findings.md`](paper_findings.md).
