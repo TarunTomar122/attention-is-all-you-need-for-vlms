@@ -17,6 +17,8 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyArrowPatch, Rectangle
 
+matplotlib.rcParams["svg.hashsalt"] = "attention-is-all-you-need-for-vlms"
+
 
 ROOT = Path(__file__).resolve().parents[1]
 PAPER = ROOT / "paper"
@@ -38,8 +40,11 @@ def save(fig: plt.Figure, stem: str) -> None:
     out.mkdir(parents=True, exist_ok=True)
     WEB_ASSETS.mkdir(parents=True, exist_ok=True)
     for suffix in ("png", "pdf", "svg"):
-        metadata = {"CreationDate": dt.datetime(1970, 1, 1, tzinfo=dt.UTC), "ModDate": dt.datetime(1970, 1, 1, tzinfo=dt.UTC)} if suffix == "pdf" else None
-        fig.savefig(out / f"generated-{stem}.{suffix}", dpi=220 if suffix == "png" else None, bbox_inches="tight", pad_inches=0.08, metadata=metadata)
+        path = out / f"generated-{stem}.{suffix}"
+        metadata = {"CreationDate": dt.datetime(1970, 1, 1, tzinfo=dt.UTC), "ModDate": dt.datetime(1970, 1, 1, tzinfo=dt.UTC)} if suffix == "pdf" else {"Date": None} if suffix == "svg" else None
+        fig.savefig(path, dpi=220 if suffix == "png" else None, bbox_inches="tight", pad_inches=0.08, metadata=metadata)
+        if suffix == "svg":
+            path.write_text("\n".join(line.rstrip() for line in path.read_text().splitlines()) + "\n")
     shutil.copyfile(out / f"generated-{stem}.png", WEB_ASSETS / f"generated-{stem}.png")
     plt.close(fig)
 
@@ -130,6 +135,37 @@ def method_overview() -> None:
     save(fig, "method-overview")
 
 
+def evidence_overview(data: dict) -> None:
+    labels = ["RefCOCOg", "Ref-Adv-s", "FineCops-Ref", "CLIP control"]
+    values = [
+        data["results"]["refcocog_direct_a4_minus_s4_pp"],
+        data["results"]["refadv"]["a4_minus_s4_pp"],
+        data["results"]["finecops"]["a4_minus_s4_pp"],
+        data["results"]["clip_one_seed_a4_minus_s4_pp"],
+    ]
+    low = [-0.33, data["results"]["refadv"]["ci95_pp"][0], data["results"]["finecops"]["ci95_pp"][0]]
+    high = [0.84, data["results"]["refadv"]["ci95_pp"][1], data["results"]["finecops"]["ci95_pp"][1]]
+    fig, axis = plt.subplots(figsize=(8.8, 3.1))
+    axis.bar(labels, values, color=[COLORS["blue"], COLORS["blue"], COLORS["red"], COLORS["muted"]], width=.62)
+    axis.errorbar(range(3), values[:3], yerr=[[value - lo for value, lo in zip(values, low)], [hi - value for value, hi in zip(values, high)]], fmt="none", ecolor=COLORS["ink"], capsize=4)
+    axis.axhline(0, color=COLORS["ink"], linewidth=.8)
+    axis.set(ylabel="A4 - S4 IoU@0.5 (percentage points)", title="Fixed-depth FFN deletion across completed evaluations")
+    axis.grid(axis="y", alpha=.3, color=COLORS["grid"])
+    axis.spines[["top", "right"]].set_visible(False)
+    axis.text(3, values[3] + .12, "one seed", ha="center", fontsize=8, color=COLORS["muted"])
+    fig.tight_layout()
+    save(fig, "evidence-overview")
+
+
+def import_plot(source: Path, stem: str) -> None:
+    image = plt.imread(source)
+    fig, axis = plt.subplots(figsize=(9.2, 4.1))
+    axis.imshow(image)
+    axis.set_axis_off()
+    fig.tight_layout(pad=0)
+    save(fig, stem)
+
+
 def finecops_difficulty(data: dict) -> None:
     rows = [row for row in data["finecops_slices"] if row["slice"].startswith("level_")]
     rows.sort(key=lambda row: row["slice"])
@@ -164,7 +200,15 @@ def main() -> None:
     data = build()
     (PAPER / "data").mkdir(parents=True, exist_ok=True)
     (PAPER / "data/paper-data.json").write_text(json.dumps(data, indent=2) + "\n")
-    write_table(data); method_overview(); finecops_difficulty(data); efficiency_figure(data)
+    write_table(data)
+    evidence_overview(data)
+    method_overview()
+    finecops_difficulty(data)
+    efficiency_figure(data)
+    import_plot(REFADV / "refadv_performance_by_difficulty.png", "refadv-performance")
+    import_plot(REFADV / "refadv_delta_by_difficulty.png", "refadv-deltas")
+    import_plot(FINECOPS / "finecops_performance_by_level.png", "finecops-performance")
+    import_plot(FINECOPS / "finecops_delta_by_level.png", "finecops-deltas")
     print(PAPER / "data/paper-data.json")
 
 

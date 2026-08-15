@@ -19,6 +19,7 @@ No model weights, dataset images, or GPU are required.
 ## Regenerate Everything
 
 ```bash
+brew install tectonic
 python3 -m venv .paper-venv
 .paper-venv/bin/pip install -r requirements-paper.txt
 make PYTHON=.paper-venv/bin/python submission
@@ -37,11 +38,9 @@ make arxiv-package
 make arxiv-preflight
 ```
 
-`paper-pdf` creates the versioned review PDF with the local deterministic renderer. The Overleaf
+`paper-pdf` compiles the canonical LaTeX manuscript with Tectonic. The Overleaf
 and arXiv ZIPs contain `main.tex`, `references.bib`, the generated LaTeX table, and all referenced
-vector PDF figures. `arxiv-preflight` performs source hygiene, citation, and inclusion checks; a
-final clean TeX compilation remains a required human-submission step when a TeX environment is
-available.
+vector PDF figures. `arxiv-preflight` performs source hygiene, citation, and inclusion checks.
 
 ## What Is Canonical
 
@@ -55,7 +54,12 @@ available.
 
 | Figure | Main point |
 | --- | --- |
+| `generated-evidence-overview` | The completed fixed-depth comparisons and intervals. |
 | `generated-method-overview` | The FFN residual is the only A4/S4 intervention. |
+| `generated-refadv-performance` | Absolute adversarial performance by native difficulty metadata. |
+| `generated-refadv-deltas` | Ref-Adv does not expose a monotonic A4 deficit. |
+| `generated-finecops-performance` | All variants decline with official FineCops difficulty. |
+| `generated-finecops-deltas` | FineCops slice gaps are not monotonic. |
 | `generated-finecops-difficulty` | FineCops has a small overall gap without monotonic difficulty evidence. |
 | `generated-efficiency-summary` | A4 reduces decoder parameters/latency; end-to-end timing stays backbone-dominated. |
 

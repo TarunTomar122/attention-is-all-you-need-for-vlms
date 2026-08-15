@@ -15,7 +15,12 @@ EXPECTED = {
     "main.tex",
     "references.bib",
     "tables/generated-main-results.tex",
+    "figures/generated-evidence-overview.pdf",
     "figures/generated-method-overview.pdf",
+    "figures/generated-refadv-performance.pdf",
+    "figures/generated-refadv-deltas.pdf",
+    "figures/generated-finecops-performance.pdf",
+    "figures/generated-finecops-deltas.pdf",
     "figures/generated-finecops-difficulty.pdf",
     "figures/generated-efficiency-summary.pdf",
 }

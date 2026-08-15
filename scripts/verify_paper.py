@@ -24,7 +24,7 @@ def main() -> None:
     require(round(data["results"]["finecops"]["a4_minus_s4_pp"], 2) == -0.52, "FineCops point estimate changed")
     require(round(data["results"]["finecops"]["a8_minus_s4_pp"], 2) == 0.26, "A8 recovery estimate changed")
     require(round(data["results"]["refadv"]["a4_minus_s4_pp"], 2) == 0.79, "Ref-Adv result changed")
-    for stem in ("method-overview", "finecops-difficulty", "efficiency-summary"):
+    for stem in ("evidence-overview", "method-overview", "refadv-performance", "refadv-deltas", "finecops-performance", "finecops-deltas", "finecops-difficulty", "efficiency-summary"):
         for suffix in ("png", "pdf", "svg"):
             path = ROOT / f"paper/figures/generated-{stem}.{suffix}"
             require(path.is_file() and path.stat().st_size > 1000, f"missing asset: {path}")
@@ -41,7 +41,7 @@ def main() -> None:
     text = "\n".join(page.extract_text() or "" for page in reader.pages)
     require(len(reader.pages) >= 8, "rendered paper is unexpectedly short")
     require(reader.metadata.author == "Tarun Tomar", "rendered paper author changed")
-    for phrase in ("FineCops-Ref", "Qualitative-panel provenance", "Reproducibility Details", "References"):
+    for phrase in ("FineCops-Ref", "Does attention-only depth recover the gap?", "Reproducibility Details", "References"):
         require(phrase in text, f"rendered paper omits {phrase}")
     print("Paper verification passed: frozen contract, release structure, result table, and generated figure assets.")
 

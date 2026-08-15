@@ -6,7 +6,12 @@
     "paper/tables/generated-main-results.tex"
   ],
   "generated_figures": [
+    "evidence-overview",
     "method-overview",
+    "refadv-performance",
+    "refadv-deltas",
+    "finecops-performance",
+    "finecops-deltas",
     "finecops-difficulty",
     "efficiency-summary"
   ],

@@ -2,7 +2,7 @@
 
 **A controlled study over frozen vision-language features**
 
-[Paper PDF](paper/main.pdf) | [Research website](docs/index.html) | [LaTex source](paper/main.tex) | [Final status](research-docs/current_status.md)
+[Paper PDF](paper/main.pdf) | [Research website](https://taruntomar122.github.io/attention-is-all-you-need-for-vlms/) | [LaTeX source](paper/main.tex) | [Final status](research-docs/current_status.md)
 
 This repository studies a narrow question: once a pretrained VLM has already encoded image and language context, can a small trainable grounding decoder omit token-wise feed-forward networks (FFNs) without losing its ability to localize a referred object?
 
