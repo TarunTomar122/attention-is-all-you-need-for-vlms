@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A controlled study of FFN-free visual grounding decoders over frozen VLM features.">
+  <title>Do Visual Grounding Decoders Need Feed-Forward Networks?</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="wordmark" href="#top">Grounding Decoders</a>
+    <nav aria-label="Page navigation">
+      <a href="#question">Question</a>
+      <a href="#method">Method</a>
+      <a href="#evidence">Evidence</a>
+      <a href="#limits">Limits</a>
+    </nav>
+  </header>
+
+  <main id="top" class="paper">
+    <header class="paper-header">
+      <p class="eyebrow">Empirical architecture study</p>
+      <h1>Do Visual Grounding Decoders Need Feed-Forward Networks?</h1>
+      <p class="subtitle">A controlled study over frozen vision-language features</p>
+      <p class="metadata">Tarun Tomar<br>Single-query referring-expression grounding<br><a href="../paper/main.pdf">Read the manuscript PDF</a> <span aria-hidden="true">·</span> <a href="https://github.com/TarunTomar122/attention-is-all-you-need-for-vlms">Code and evidence</a></p>
+    </header>
+
+    <section id="question">
+      <p class="section-label">Question</p>
+      <h2>Once a VLM has encoded image and language context, does a small grounding head still need an FFN?</h2>
+      <p>We compare a four-block attention-only decoder (<strong>A4</strong>), the same four-block decoder with FFN residuals (<strong>S4</strong>), and an eight-block attention-only capacity control (<strong>A8</strong>). The VLM backbone remains frozen in every condition.</p>
+      <div class="callout"><strong>Main result.</strong> Fixed-depth A4 is broadly competitive on standard and adversarial grounding. FineCops-Ref exposes a small A4 deficit, but A8 recovers it. The released difficulty labels do not show a monotonic hard-example boundary.</div>
+    </section>
+
+    <section id="method">
+      <p class="section-label">Method</p>
+      <h2>One causal intervention, shared everywhere else</h2>
+      <figure class="wide-figure">
+        <img src="assets/generated-method-overview.png" alt="Image and expression enter a frozen VLM, then A4, S4, or A8 grounding decoder variants feed a shared patch readout and one bounding box.">
+        <figcaption>The decoder FFN residual is the only causal difference between A4 and S4. A8 reallocates capacity into attention depth; it is parameter-matched, not compute-matched.</figcaption>
+      </figure>
+      <div class="grid three">
+        <article><h3>Frozen inputs</h3><p>SigLIP2 image and text features are projected to width 256. The backbone retains its pretrained FFNs.</p></article>
+        <article><h3>Shared output</h3><p>One learned query produces a 24×24 patch distribution. A frozen mass rule converts it to one box.</p></article>
+        <article><h3>Locked evaluation</h3><p><code>tau = 0.8</code>, paired image-clustered bootstrap, 10,000 replicates, seed <code>20260812</code>.</p></article>
+      </div>
+    </section>
+
+    <section id="evidence">
+      <p class="section-label">Evidence</p>
+      <h2>The result changes with the comparison, not simply with a label called “hard.”</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Evaluation</th><th>A4 − S4 IoU@0.5</th><th>Reading</th></tr></thead>
+          <tbody>
+            <tr><td>RefCOCOg direct, 3 seeds</td><td>+0.26 pp<br><small>90% CI [-0.33, +0.84]</small></td><td>Direct retention passes; planned logical interaction is not confirmed.</td></tr>
+            <tr><td>Ref-Adv-s, 3 seeds</td><td>+0.79 pp<br><small>95% CI [+0.06, +1.52]</small></td><td>No collapse across native negation, length, or distractor metadata.</td></tr>
+            <tr><td>FineCops-Ref, 3 seeds</td><td>-0.52 pp<br><small>95% CI [-0.95, -0.12]</small></td><td>A small fixed-depth compositional gap appears.</td></tr>
+            <tr><td>FineCops A8 − S4</td><td>+0.26 pp</td><td>Additional attention depth recovers the overall gap.</td></tr>
+            <tr><td>CLIP control, 1 seed</td><td>+0.18 pp</td><td>Directional replication only.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="grid two">
+        <figure>
+          <img src="assets/generated-finecops-difficulty.png" alt="FineCops performance and paired A4-S4 differences across official difficulty levels.">
+          <figcaption>FineCops has the only clear fixed-depth A4 deficit. The level-3 interval is imprecise and does not support monotonic FFN necessity.</figcaption>
+        </figure>
+        <figure>
+          <img src="assets/generated-efficiency-summary.png" alt="Bar charts comparing decoder parameter count and cached-decoder latency for A4, S4, and A8.">
+          <figcaption>A4 reduces trainable decoder parameters by 44.4% and cached-decoder latency by 10.1%. Full-pipeline latency remains backbone-dominated.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section id="limits">
+      <p class="section-label">Interpretation</p>
+      <h2>A narrow decoder result, released with its boundaries</h2>
+      <ul>
+        <li>This is not an attention-only VLM result: frozen backbones retain their FFNs.</li>
+        <li>A8 recovery identifies a viable capacity reallocation, not an FFN mechanism proof.</li>
+        <li>RefCOCO and CLIP are seed-0/one-seed descriptive replications.</li>
+        <li>Raw licensed images, provider-local checkpoints, and qualitative box exports are not in Git.</li>
+      </ul>
+      <p>Read the <a href="../paper/claims-and-limitations.md">claim boundary</a>, <a href="../research-docs/frozen_evaluation_protocol.md">frozen protocol</a>, <a href="../results/README.md">result index</a>, and <a href="../decision-log/README.md">decision log</a> before reusing a number.</p>
+    </section>
+  </main>
+
+  <footer><span>Frozen evidence release · 2026</span><a href="https://github.com/TarunTomar122/attention-is-all-you-need-for-vlms">Repository</a></footer>
+</body>
+</html>

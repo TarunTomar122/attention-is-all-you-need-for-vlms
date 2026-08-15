@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "status": "frozen",
+  "primary_backbone": {
+    "family": "SigLIP2 B/16",
+    "image_resolution": 384,
+    "image_tokens": 576,
+    "text_and_image_features": "frozen"
+  },
+  "decoders": {
+    "A4": {"blocks": 4, "ffn_residual": false, "hidden_width": 256},
+    "S4": {"blocks": 4, "ffn_residual": true, "ffn_hidden_width": 1024, "hidden_width": 256},
+    "A8": {"blocks": 8, "ffn_residual": false, "hidden_width": 256}
+  },
+  "task": "single-query referring-expression grounding to one bounding box",
+  "evaluation": {
+    "box_mass_tau": 0.8,
+    "bootstrap_seed": 20260812,
+    "bootstrap_replicates": 10000,
+    "cluster_unit": "image_id",
+    "primary_metric": "IoU@0.5"
+  },
+  "selection_boundary": "Validation selected tau once; Ref-Adv-s and FineCops-Ref received no tuning."
+}

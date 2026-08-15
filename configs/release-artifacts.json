@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "paper_sources": [
+    "paper/main.tex",
+    "paper/references.bib",
+    "paper/tables/generated-main-results.tex"
+  ],
+  "generated_figures": [
+    "method-overview",
+    "finecops-difficulty",
+    "efficiency-summary"
+  ],
+  "evidence_sources": [
+    "docs/results/refcocog-three-seed-summary.md",
+    "docs/results/refadv/refadv_bootstrap.json",
+    "docs/results/finecops/finecops_bootstrap.json",
+    "docs/results/efficiency/measurements.json",
+    "docs/results/clip-control/clip_control_summary.json"
+  ],
+  "raw_assets": "Excluded: licensed images, provider-local checkpoints, and raw box exports."
+}

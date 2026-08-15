@@ -1,0 +1,5 @@
+# GPU environment used for the frozen training/evaluation record.
+-r requirements.txt
+torch==2.4.1
+torchvision==0.19.1
+accelerate==1.0.1

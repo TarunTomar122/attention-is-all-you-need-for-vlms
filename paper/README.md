@@ -1,26 +1,67 @@
-# Paper package
+# Paper Package
 
-Canonical manuscript source: [`main.tex`](main.tex). The rendered review draft is [`main.pdf`](main.pdf), and the readable working draft is [`draft.md`](draft.md).
+Title: **Do Visual Grounding Decoders Need Feed-Forward Networks?**
 
-The package follows the same evidence-first workflow as the prior `vision-pathways` paper: every figure and table is generated from committed result artifacts, then checked without a GPU.
+This directory contains the canonical manuscript source and the CPU-only path from committed
+experiment evidence to paper figures, tables, a reviewable PDF, and a submission-source archive.
+No model weights, dataset images, or GPU are required.
+
+## Start Here
+
+1. Read the rendered [`main.pdf`](main.pdf) and editable [`main.tex`](main.tex).
+2. Check each scientific sentence against [`claims-and-limitations.md`](claims-and-limitations.md).
+3. Use [`method.md`](method.md) and the [frozen protocol](../research-docs/frozen_evaluation_protocol.md)
+   to audit the intervention and statistics.
+4. Read [`citation-audit.md`](citation-audit.md) before changing related-work wording.
+5. Use [`submission-checklist.md`](submission-checklist.md) only after the human author has reviewed
+   the manuscript.
+
+## Regenerate Everything
 
 ```bash
-make paper-assets
-make verify-paper
-make paper-pdf  # requires a local LaTeX installation
+python3 -m venv .paper-venv
+.paper-venv/bin/pip install -r requirements-paper.txt
+make PYTHON=.paper-venv/bin/python submission
 ```
 
-## Paper story
+The command creates PNG/PDF/SVG figure variants, the CSV/Markdown/LaTeX result table, the
+machine-readable paper-data manifest, static-site figures, and the rendered review PDF. It checks
+the frozen contract and exact headline result values.
 
-**Do Visual Grounding Decoders Need Feed-Forward Networks?** studies one small trainable grounding decoder over frozen VLM image/text tokens. At the matched fixed depth, A4 removes the FFN from each of four decoder blocks; S4 keeps it. A8 uses eight attention-only blocks to approximately match S4's parameter count.
+## Build Or Package The Source
 
-The evidence supports a narrow conclusion: FFNs are often dispensable in this decoder, and where a small controlled-compositional gap appears, additional attention depth recovers it. It does **not** establish an attention-only VLM or universal FFN dispensability.
+```bash
+make paper-pdf
+make overleaf-package
+make arxiv-package
+make arxiv-preflight
+```
 
-- [`outline.md`](outline.md): final section-level argument.
-- [`claims-and-limitations.md`](claims-and-limitations.md): sentence-level claim boundaries.
-- [`method.md`](method.md): exact architecture and evaluation contract.
-- [`related-work.md`](related-work.md): novelty positioning.
-- [`citation-audit.md`](citation-audit.md): primary-source bibliography verification.
-- [`data-availability.md`](data-availability.md): versioned artifacts and license boundary.
-- [`submission-checklist.md`](submission-checklist.md): remaining human-facing work.
-- [`data/paper-data.json`](data/paper-data.json): generated evidence snapshot and hashes.
+`paper-pdf` creates the versioned review PDF with the local deterministic renderer. The Overleaf
+and arXiv ZIPs contain `main.tex`, `references.bib`, the generated LaTeX table, and all referenced
+vector PDF figures. `arxiv-preflight` performs source hygiene, citation, and inclusion checks; a
+final clean TeX compilation remains a required human-submission step when a TeX environment is
+available.
+
+## What Is Canonical
+
+- Keep: `main.tex`, `main.pdf`, `references.bib`, `figures/*.pdf`, the generated table, evidence
+  manifest, and research notes.
+- Generated and ignored: `overleaf-package.zip`, `arxiv-source.zip`, and LaTeX intermediates.
+- Website PNGs are generated once under `../docs/assets/`.
+- `draft.md`, `outline.md`, and `writing-guide.md` are writing/review aids, not evidence sources.
+
+## Figure Map
+
+| Figure | Main point |
+| --- | --- |
+| `generated-method-overview` | The FFN residual is the only A4/S4 intervention. |
+| `generated-finecops-difficulty` | FineCops has a small overall gap without monotonic difficulty evidence. |
+| `generated-efficiency-summary` | A4 reduces decoder parameters/latency; end-to-end timing stays backbone-dominated. |
+
+## Evidence Boundary
+
+The paper is about an FFN-free trainable grounding decoder over frozen VLM features. It does not
+claim an attention-only VLM, pixel segmentation, multiple-object grounding, backbone fine-tuning,
+or universal FFN dispensability. See [`data-availability.md`](data-availability.md) for the raw
+asset and license boundary.

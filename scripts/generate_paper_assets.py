@@ -8,6 +8,7 @@ import datetime as dt
 import hashlib
 import json
 import re
+import shutil
 from pathlib import Path
 
 import matplotlib
@@ -19,6 +20,7 @@ from matplotlib.patches import FancyArrowPatch, Rectangle
 
 ROOT = Path(__file__).resolve().parents[1]
 PAPER = ROOT / "paper"
+WEB_ASSETS = ROOT / "docs" / "assets"
 FINECOPS = ROOT / "docs/results/finecops"
 REFADV = ROOT / "docs/results/refadv"
 EFFICIENCY = ROOT / "docs/results/efficiency"
@@ -34,9 +36,11 @@ def sha256(path: Path) -> str:
 def save(fig: plt.Figure, stem: str) -> None:
     out = PAPER / "figures"
     out.mkdir(parents=True, exist_ok=True)
-    for suffix in ("png", "pdf"):
+    WEB_ASSETS.mkdir(parents=True, exist_ok=True)
+    for suffix in ("png", "pdf", "svg"):
         metadata = {"CreationDate": dt.datetime(1970, 1, 1, tzinfo=dt.UTC), "ModDate": dt.datetime(1970, 1, 1, tzinfo=dt.UTC)} if suffix == "pdf" else None
         fig.savefig(out / f"generated-{stem}.{suffix}", dpi=220 if suffix == "png" else None, bbox_inches="tight", pad_inches=0.08, metadata=metadata)
+    shutil.copyfile(out / f"generated-{stem}.png", WEB_ASSETS / f"generated-{stem}.png")
     plt.close(fig)
 
 

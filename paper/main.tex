@@ -3,73 +3,134 @@
 \usepackage{booktabs}
 \usepackage{graphicx}
 \usepackage{microtype}
+\usepackage{amsmath}
+\usepackage{enumitem}
 \usepackage{hyperref}
-\usepackage{xcolor}
 \hypersetup{colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=blue}
 \title{Do Visual Grounding Decoders Need Feed-Forward Networks?\\\large A Controlled Study over Frozen Vision-Language Features}
-\author{Tarun Tomar\\\small University of Edinburgh\\\small\url{https://github.com/TarunTomar122}}
+\author{Tarun Tomar\\\small\url{https://github.com/TarunTomar122/attention-is-all-you-need-for-vlms}}
 \date{}
 \begin{document}
 \maketitle
 
 \begin{abstract}
-Do feed-forward networks (FFNs) in visual grounding decoders add essential computation once a pretrained vision-language model has already encoded image and language context? We study this question with a single-query decoder trained over frozen VLM features. The matched A4 decoder uses four text/image cross-attention blocks without token-wise FFNs; S4 adds one FFN residual to each block; A8 doubles attention-only depth to approximately match S4's parameter count. On RefCOCOg and Ref-Adv-s, A4 matches or slightly exceeds S4. On FineCops-Ref, a controlled compositional benchmark, A4 trails S4 by 0.52 percentage points in IoU@0.5, but A8 recovers the gap. Official FineCops difficulty levels do not reveal a monotonic increase in the gap. A4 uses 44.4\% fewer trainable decoder parameters and reduces cached-decoder latency by 10.1\%, although end-to-end latency remains backbone-dominated. These results are limited to the trainable decoder: they show that FFNs are often dispensable for small grounding heads over frozen VLM representations, not that a complete VLM can be attention-only.
+Do feed-forward networks (FFNs) in visual grounding decoders add essential computation once a pretrained vision-language model has already encoded image and language context? We compare a four-block attention-only decoder (A4), a matched four-block attention-plus-FFN decoder (S4), and an eight-block attention-only parameter control (A8) over frozen VLM features. A4 matches or slightly exceeds S4 on RefCOCOg and Ref-Adv-s. FineCops-Ref reveals a small A4 deficit (-0.52 percentage points IoU@0.5, 95\% CI [-0.95, -0.12]), but A8 recovers it (+0.26 points versus S4). Official FineCops levels do not show a monotonic increase in the gap. A4 reduces trainable decoder parameters by 44.4\% and cached-decoder latency by 10.1\%, although end-to-end latency remains backbone-dominated. These results concern the trainable decoder, not a complete attention-only VLM.
 \end{abstract}
 
 \section{Introduction}
-Visual grounding maps an image and a referring expression to one box. Standard grounding decoders generally retain the attention-plus-FFN Transformer block. Yet a frozen VLM already supplies spatial image features and contextual text representations. This raises a narrower architectural question: does a small trainable grounding head still need a token-wise FFN, or can attention retrieve and assemble the relevant context?
 
-We intervene only in the new decoder. A4 has four text/image cross-attention blocks without FFNs; S4 has identical blocks plus FFN residuals; A8 has eight attention-only blocks and approximately matches S4's parameter count. The frozen VLM retains its pretrained FFNs. This setting differs from extracting useful attention heads from a frozen full LVLM \cite{kang2025heads} and from attention-based referring segmentation systems \cite{wu2025flmm,ding2021vlt}: we train matched real-image grounding decoders over the same frozen tokens.
+Visual grounding maps an image and referring expression to one target box. Standard Transformer grounding heads retain attention-plus-FFN blocks, even when their input already contains contextual visual and language features from a pretrained vision-language model (VLM). This leaves a narrow architectural question: once a frozen VLM supplies spatial image features and contextual text states, does a small trainable grounding head still need token-wise FFN computation?
 
-Our results reject a simple failure-boundary story. A4 retains direct RefCOCOg performance and is slightly ahead on Ref-Adv-s. FineCops-Ref reveals a small overall fixed-depth deficit, but A8 recovers it; its official difficulty levels do not show a monotonic harder-expression boundary. The result is therefore an architectural capacity-reallocation finding, not a claim that FFNs are universally unnecessary.
+Attention maps can already localize objects, and frozen-LVLM work shows that a few internal heads can be useful for grounding \cite{kang2025heads,wu2025flmm,ding2021vlt}. That does not answer the matched FFN-necessity question. We isolate a new single-query grounding decoder and hold the frozen VLM, data, supervision, readout, box conversion, and evaluation contract fixed.
 
-\section{Decoder and evaluation contract}
-The frozen SigLIP2 backbone \cite{tschannen2025siglip2} supplies 576 image tokens in a 24$\times$24 grid and contextual text token states. Shared linear maps project both to width 256. One learned grounding query alternates text and image cross-attention. S4 additionally applies a pre-normalized GELU FFN after each pair; A4 omits it. The shared patch-attention readout produces a 576-way probability distribution, trained by cross-entropy against a normalized patch-overlap target. No box-regression MLP, segmentation refinement, auxiliary loss, multi-query head, or backbone adaptation is used.
+At fixed depth, A4 removes the FFN residual from each of four decoder blocks and S4 retains it. A8 uses eight attention-only blocks to approximately match S4 trainable parameter count. We ask: (1) does A4 retain S4 performance, (2) does any gap grow with released or official difficulty metadata, and (3) can attention depth recover an observed fixed-depth gap? A4 broadly matches S4 on RefCOCOg and Ref-Adv-s. FineCops-Ref exposes a small gap, but A8 recovers it. The completed slices do not support a monotonic harder-expression boundary.
+
+\section{Why This Comparison Is Non-trivial}
+
+Attention routes a query to relevant text and image tokens, whereas an FFN applies a token-wise nonlinear transformation after routing. If frozen VLM features already encode visual locations and language context, a small head may mostly need retrieval and assembly. But relations, compositional attributes, and distractor resolution could require transformations that attention-only depth cannot reproduce at the same scale.
+
+A global score is insufficient. A4 could match S4 because a dataset is dominated by direct references while losing on relations. An apparent hard-example gap could instead be caused by a changed threshold, a position prior, one-modality shortcut, or performance-defined slice. We use frozen post-processing, paired seeds, modality shuffles, native Ref-Adv metadata, and official FineCops metadata. The RefCOCOg protocol predeclares direct retention and a direct-minus-logical interaction; the latter is not confirmed and is reported as such.
+
+\section{Decoder Intervention}
+
+The frozen SigLIP2 backbone \cite{tschannen2025siglip2} produces 576 image tokens in a $24\times24$ raster grid and contextual text states. Shared learned linear maps project both streams to width 256. A single learned grounding query $q$ alternates text and image cross-attention:
+\begin{align*}
+q &\leftarrow q + \operatorname{CrossAttentionText}(\operatorname{LN}(q),\operatorname{LN}(T)),\\
+q &\leftarrow q + \operatorname{CrossAttentionImage}(\operatorname{LN}(q),\operatorname{LN}(I)).
+\end{align*}
+S4 then adds $q \leftarrow q + \operatorname{FFN}(\operatorname{LN}(q))$ with a GELU FFN of hidden width 1024. A4 omits this residual and A8 repeats the attention-only block eight times.
+
+The shared readout maps the final query and image tokens to one softmax-normalized patch distribution. Training uses cross-entropy against normalized target-box overlap with each patch. There is no coordinate-regression MLP, segmentation refiner, auxiliary loss, multi-query head, or backbone adaptation.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=\linewidth]{figures/generated-method-overview.pdf}
-\caption{The only causal architectural intervention is the decoder FFN residual. Frozen backbone features, attention, readout, loss, and box conversion are shared.}
+\caption{Frozen VLM features feed A4, S4, or A8. The only causal A4/S4 intervention is the decoder FFN residual. The readout and heatmap-to-box conversion are shared.}
 \label{fig:method}
 \end{figure}
 
-The heatmap-to-box mass $\tau=0.8$ was selected once on validation and frozen before all test and out-of-distribution evaluation. Three-seed comparisons average paired seeds per example, then use 10,000 image-clustered bootstrap replicates with seed 20260812. FineCops uses only official level and tuple-type fields; Ref-Adv-s uses predefined native metadata.
+\section{Experimental Protocol}
+
+The heatmap-to-box mass threshold $\tau=0.8$ was selected once on RefCOCOg validation and frozen before every test or out-of-distribution evaluation. Three-seed comparisons average paired seed outputs per example and use 10,000 image-clustered percentile bootstrap replicates with seed 20260812. Image-level resampling retains all expressions associated with a sampled image.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Completed evaluations. RefCOCO and CLIP are descriptive controls.}
+\begin{tabular}{p{0.18\linewidth}p{0.21\linewidth}p{0.48\linewidth}}
+\toprule
+Evaluation & Role & Frozen use \\
+\midrule
+RefCOCOg UMD & Primary & Three paired seeds, direct/logical protocol, and modality shuffles. \\
+RefCOCO UNC & Replication & Seed-0 classic-dataset check. \\
+Ref-Adv-s & Adversarial/OOD & 1,142 evaluation-only rows and native metadata slices. \\
+FineCops-Ref & Compositional & 9,605 official positive-test rows and official fields. \\
+\bottomrule
+\end{tabular}
+\label{tab:datasets}
+\end{table}
+
+The primary metric is box IoU@0.5. Mean IoU, pointing accuracy, and target mass are secondary. Ref-Adv expression-length and distractor-count bins are empirical metadata quartiles defined before performance slicing. FineCops uses released official difficulty and tuple-type fields only. No LLM-derived semantic labels are introduced.
 
 \section{Results}
+
 \begin{table*}[t]
 \centering
-\caption{Frozen evidence map. Intervals and descriptive labels are preserved rather than converted into a single significance claim.}
+\caption{Frozen evidence map. Intervals and descriptive labels are preserved rather than collapsed into one significance claim.}
 \input{tables/generated-main-results.tex}
 \label{tab:main}
 \end{table*}
 
-On RefCOCOg \cite{yu2016context}, A4--S4 is +0.26 pp for direct references (90\% CI [-0.33, +0.84]). The direct-retention gate passes, but the predeclared direct-minus-logical interaction is not confirmed. Modality shuffles sharply reduce both decoders, supporting genuine use of image and text information.
+\subsection{Standard grounding and modality controls}
 
-On Ref-Adv-s \cite{dong2026refadv}, A4--S4 is +0.79 pp (95\% CI [+0.06, +1.52]). Negation, length, and distractor slices do not yield a monotonic deficit. FineCops-Ref \cite{liu2024finecops} supplies the small fixed-depth gap: A4--S4 is -0.52 pp (95\% CI [-0.95, -0.12]). A8 is +0.26 pp versus S4. The level-3 interval is wide and slightly favors A4, so it cannot support a monotonic difficulty boundary.
+On RefCOCOg direct expressions \cite{yu2016context}, A4-S4 is +0.26 pp with a 90\% CI of [-0.33, +0.84]. Direct retention passes, but the planned direct-minus-logical interaction is +1.30 pp with a 95\% CI of [-0.09, +2.66], so it is not confirmed. Correct-pair predictions exceed both image-shuffle and text-shuffle conditions. Correct minus image-shuffle is +48.7 pp for A4 and +48.6 pp for S4; correct minus text-shuffle is +22.6 pp and +22.4 pp. These controls support genuine image/text dependence without establishing a semantic-reasoning boundary.
+
+\subsection{Adversarial grounding}
+
+On Ref-Adv-s \cite{dong2026refadv}, A4-S4 is +0.79 pp (95\% CI [+0.06, +1.52]). Negation, expression length, and distractor count do not show a monotonic A4 loss. The longest-expression quartile is +1.79 pp and the highest-distractor quartile is 0.00 pp. This rejects the expected broad collapse on released metadata, but does not prove equality in every low-count slice.
+
+\subsection{Controlled compositional grounding}
+
+FineCops-Ref \cite{liu2024finecops} supplies the only clear fixed-depth deficit: A4-S4 is -0.52 pp (95\% CI [-0.95, -0.12]). A8-S4 is +0.26 pp. This is compatible with a useful FFN contribution at fixed depth on this benchmark, but not a universal FFN-necessity claim because added attention depth recovers the overall gap. The official level-3 estimate slightly favors A4 but is wide; therefore the official levels do not show a monotonic harder-means-more-FFN-needed trend.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\linewidth]{figures/generated-finecops-difficulty.pdf}
-\caption{FineCops official levels. A4 has a small overall deficit, but the official hard level is imprecise and does not establish monotonic FFN necessity.}
+\includegraphics[width=.92\linewidth]{figures/generated-finecops-difficulty.pdf}
+\caption{FineCops-Ref official difficulty levels. A4 has a small overall fixed-depth deficit, but level 3 is imprecise and does not support a monotonic hard-example boundary.}
 \label{fig:finecops}
 \end{figure}
 
-A one-seed CLIP control has A4--S4 = +0.18 pp, which is descriptive rather than confirmatory. A4 has 2.64M trainable parameters versus S4's 4.74M and is 10.1\% faster for cached-feature decoder execution. Full-pipeline timing changes by only 0.4\%, because the frozen VLM dominates.
+\subsection{Efficiency and second-backbone control}
+
+A4 has 2.64M trainable decoder parameters compared with S4's 4.74M. Cached decoder latency is 6.71 ms versus 7.46 ms, a 10.1\% reduction. Full-pipeline latency is 209.35 ms versus 210.20 ms, so the frozen VLM dominates end-to-end timing. The frozen CLIP one-seed control gives A4-S4 = +0.18 pp; this is directional replication evidence only.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=.9\linewidth]{figures/generated-efficiency-summary.pdf}
-\caption{A4 reduces trainable decoder size and decoder-only latency. A8 approximately matches S4 parameters but is not compute-matched.}
+\includegraphics[width=.86\linewidth]{figures/generated-efficiency-summary.pdf}
+\caption{A4 reduces trainable decoder size and cached-decoder latency. A8 approximately matches S4 parameters, but is not compute-matched.}
 \label{fig:efficiency}
 \end{figure}
 
-\section{Limitations and related work}
-Attention maps have long been useful for grounding, and frozen-LVLM attention-head selection is strong evidence that localization information can already be present in representations \cite{kang2025heads}. Frozen-LMM grounding also uses attention-derived correspondences, but keeps CNN and SAM refinement in the localization path \cite{wu2025flmm}; attention/query referring segmentation likewise addresses a different output and architecture \cite{ding2021vlt}. Our contribution is the matched FFN necessity intervention in a trainable grounding head. The closest architectural context is the recent attention-only language-model study of Ndubuaku et al.\ \cite{ndubuaku2026attention}, which finds that reallocating FFN capacity into attention depth can close much of the language-modeling gap; it does not study natural-image grounding.
+\section{Related Work and Limits}
 
-The conclusion is bounded. The frozen backbones still contain FFNs, and we do not test segmentation, fine-tuning, multiple queries, or fully attention-only VLMs. RefCOCO and CLIP evidence is seed-0/one-seed only. A8 recovery is parameter-matched, not compute-matched, so it demonstrates a viable capacity allocation rather than the mechanism of every observed gap.
+Kang et al. \cite{kang2025heads} identify a few localization-relevant heads in a frozen full LVLM. F-LMM \cite{wu2025flmm} uses frozen LMM attention maps but retains CNN and SAM refinement for referring segmentation, while VLT \cite{ding2021vlt} is a referring-segmentation architecture. These precedents establish that attention can expose grounding information but do not perform the matched trainable FFN-deletion ablation over the same frozen image/text tokens. The related attention-only Transformer study in language modeling \cite{ndubuaku2026attention} provides capacity-reallocation context, not direct natural-image grounding evidence.
+
+The frozen backbones retain their FFNs. The output is one box, not pixel segmentation or multi-object detection. The study does not test backbone fine-tuning, multiple learned queries, or complete attention-only VLMs. RefCOCO and CLIP are seed-0/one-seed descriptive replications. A8 recovery shows a viable parameter allocation; it does not identify the mechanism behind every FFN effect.
 
 \section{Conclusion}
-In a small grounding decoder over frozen VLM features, FFN deletion is surprisingly benign on standard and adversarial referring-expression grounding. A small FineCops compositional deficit emerges at fixed depth, but additional attention depth recovers it and no monotonic hard-example boundary appears. The evidence supports a focused architectural conclusion: attention-only decoder capacity can often substitute for FFN capacity when the frozen VLM already supplies the relevant visual and language context.
+
+FFN deletion is surprisingly benign for a small grounding decoder over frozen VLM features on standard and adversarial referring-expression grounding. A small controlled-compositional deficit appears at fixed depth, but attention depth recovers it and no monotonic difficulty boundary emerges. The supported conclusion is architectural and bounded: attention-only decoder capacity can often substitute for FFN capacity when frozen features already supply relevant visual and language context.
+
+\appendix
+\section{Reproducibility Details}
+
+The release is evidence-first. \texttt{scripts/generate\_paper\_assets.py} reads committed bootstrap, slice, efficiency, CLIP-control, and RefCOCOg summary artifacts; it generates manuscript figures, tables, the paper-data manifest, and website images without a GPU or model download. \texttt{scripts/verify\_paper.py} regenerates the artifacts and checks frozen $\tau$, bootstrap configuration, headline values, source hashes, expected assets, and rendered-PDF metadata. \texttt{test\_study.py} checks decoder/data invariants.
+
+The repository releases code, frozen contracts, aggregate result summaries, per-example metric tables where versioned, bootstrap outputs, figures, and decision logs. It excludes third-party images, backbone weights, provider-local checkpoints, and raw qualitative box exports. Qualitative panels must be regenerated from preserved raw predictions and source-attributed images; they must not be inferred from aggregate metrics.
+
+\section{AI Assistance Disclosure}
+
+AI-assisted tools were used for code assistance, experiment orchestration, figure generation, manuscript organization, and language editing. No AI system is an author; responsibility for this manuscript and any eventual submission remains with Tarun Tomar.
 
 \bibliographystyle{plain}
 \bibliography{references}

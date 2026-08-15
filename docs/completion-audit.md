@@ -1,6 +1,6 @@
 # Experimental completion audit
 
-Status: experimental phase frozen; paper preparation in progress
+Status: experimental phase frozen; publication-facing paper package prepared
 
 ## Complete and locally verified
 
@@ -39,14 +39,17 @@ Status: experimental phase frozen; paper preparation in progress
 
 These are completed execution results. No further GPU experiment is authorized by this audit.
 
-## Audit checks run on 2026-08-12
+## Publication checks run on 2026-08-15
 
 ```text
 ok: taxonomy, data normalization, decoder, masks, gradients, geometry, and parameter match
 ok: paired image-clustered analysis fixture
+ok: paper/result artifacts regenerate from committed evidence
+ok: source-only archive preflight checks the exact submission package
 ```
 
-The current audit records both local readiness and the bounded GPU evidence gathered so far; final test claims remain blocked until the locked evaluation protocol is completed.
+The current audit records the bounded completed GPU evidence and the publication-facing CPU-only
+artifact path. No final claim remains blocked by an authorized GPU experiment.
 
 ## Frozen result record
 

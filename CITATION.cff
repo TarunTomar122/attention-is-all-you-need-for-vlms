@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use this code or result package, please cite the associated manuscript."
+title: "Do Visual Grounding Decoders Need Feed-Forward Networks?"
+type: software
+authors:
+  - family-names: Tomar
+    given-names: Tarun
+repository-code: "https://github.com/TarunTomar122/attention-is-all-you-need-for-vlms"
+date-released: 2026-08-15
+version: 0.1.0
+preferred-citation:
+  type: article
+  authors:
+    - family-names: Tomar
+      given-names: Tarun
+  title: "Do Visual Grounding Decoders Need Feed-Forward Networks?"
+  journal: "Manuscript in preparation"
+  year: 2026
+  url: "https://github.com/TarunTomar122/attention-is-all-you-need-for-vlms"
