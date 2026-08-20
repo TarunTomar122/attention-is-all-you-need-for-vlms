@@ -36,11 +36,23 @@ make paper-pdf
 make overleaf-package
 make arxiv-package
 make arxiv-preflight
+make icprs-pdf
+make icprs-package
 ```
 
 `paper-pdf` compiles the canonical LaTeX manuscript with Tectonic. The Overleaf
 and arXiv ZIPs contain `main.tex`, `references.bib`, the generated LaTeX table, and all referenced
 vector PDF figures. `arxiv-preflight` performs source hygiene, citation, and inclusion checks.
+
+## ICPRS adaptation
+
+[`icprs/`](icprs/) contains the anonymous IEEEtran conference-format adaptation for ICPRS: a
+compact paper within the six-page paper plus one-page reference limit, with identifying metadata
+and public repository links removed. It currently renders as three pages total (two body pages and
+one references page). Its source archive is built by `make icprs-package`. Keep the
+canonical manuscript above unchanged; choose **Regular Student Paper** in ConfTool only if the
+first author is officially registered as a student by the submission deadline, otherwise choose
+**Regular Paper**.
 
 ## What Is Canonical
 

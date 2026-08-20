@@ -13,3 +13,10 @@ paper/*.fdb_latexmk
 paper/*.fls
 paper/*.log
 paper/*.out
+paper/icprs/*.aux
+paper/icprs/*.bbl
+paper/icprs/*.blg
+paper/icprs/*.log
+paper/icprs/*.out
+paper/icprs/references.bib
+paper/icprs/icprs-source.zip
