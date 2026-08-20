@@ -78,7 +78,7 @@ A4 removes 44.4% of S4's trainable decoder parameters and reduces cached-decoder
 ## ICPRS 2027 Adaptation
 
 The repository now includes an anonymous IEEEtran version for the IEEE International Conference
-on Pattern Recognition Systems. It renders as three pages total—two body pages and one references
+on Pattern Recognition Systems. It renders as seven pages total—six body pages and one references
 page—within the venue's six-page paper plus one-page reference limit. The compact version removes
 author identity, affiliations, public repository links, and identifying PDF metadata for double-blind
 review.

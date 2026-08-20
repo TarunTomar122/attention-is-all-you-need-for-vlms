@@ -28,7 +28,7 @@ icprs-pdf:
 	cd paper/icprs && tectonic --keep-logs --keep-intermediates main.tex
 
 icprs-package: icprs-pdf
-	cd paper/icprs && zip -FS -j -q icprs-source.zip main.tex references.bib ../figures/generated-method-overview.pdf ../figures/generated-evidence-overview.pdf
+	cd paper/icprs && zip -FS -j -q icprs-source.zip main.tex references.bib ../figures/generated-method-overview.pdf ../figures/generated-refadv-deltas.pdf ../figures/generated-refadv-performance.pdf ../figures/generated-finecops-performance.pdf ../figures/generated-finecops-difficulty.pdf ../figures/generated-efficiency-summary.pdf ../figures/generated-finecops-deltas.pdf
 
 clean-paper-assets:
 	rm -f paper/data/paper-data.json paper/tables/generated-* paper/figures/generated-* docs/assets/generated-*
