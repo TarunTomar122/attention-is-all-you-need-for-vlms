@@ -22,6 +22,9 @@ figcaption, small { color: #625d57; font: 14px/1.5 system-ui, sans-serif; }
 .comparison strong, .comparison span, .comparison small { display: block; }
 .comparison strong { font-size: 28px; letter-spacing: -.04em; }
 .comparison span { margin: 4px 0 8px; font-weight: 650; line-height: 1.25; }
+.submission-card { display: grid; gap: 6px; margin: 28px 0; padding: 20px; border-left: 3px solid #164d9c; background: #f2f5fa; font-family: system-ui, sans-serif; }
+.submission-card strong { font-size: 20px; }
+.submission-card span { color: #4c514c; }
 .table-wrap { overflow-x: auto; margin: 28px 0; }
 table { width: 100%; border-collapse: collapse; font: 15px/1.45 system-ui, sans-serif; }
 th, td { padding: 14px 10px; border-bottom: 1px solid #d9d6d0; text-align: left; vertical-align: top; }

@@ -16,14 +16,15 @@
     <a href="#benchmarks">Benchmarks</a>
     <a href="#results">Results</a>
     <a href="#takeaway">Takeaway</a>
+    <a href="#submission">ICPRS</a>
   </nav>
 
   <main>
     <header>
-      <p class="kicker">Visual grounding research · 2026</p>
+      <p class="kicker">Visual grounding research · ICPRS 2027 adaptation</p>
       <h1>Do Visual Grounding Decoders Need Feed-Forward Networks?</h1>
       <p class="lede">When a vision-language model has already understood an image and a referring phrase, can a small decoder find the right object using attention alone?</p>
-      <p><a href="https://github.com/TarunTomar122/attention-is-all-you-need-for-vlms/blob/main/paper/main.pdf">Read the paper</a> · <a href="https://github.com/TarunTomar122/attention-is-all-you-need-for-vlms">Browse the repository</a></p>
+      <p><a href="https://github.com/TarunTomar122/visual-grounding-decoder-study/blob/main/paper/icprs/main.pdf">Read the ICPRS paper</a> · <a href="https://github.com/TarunTomar122/visual-grounding-decoder-study/blob/main/paper/main.pdf">Read the full paper</a> · <a href="https://github.com/TarunTomar122/visual-grounding-decoder-study">Browse the repository</a></p>
     </header>
 
     <section id="question">
@@ -56,7 +57,7 @@
       </div>
       <p>A4 is the direct FFN-removal test. S4 is the normal matched decoder. A8 asks a follow-up question: if removing FFNs creates a gap, can that parameter budget be spent on more attention depth instead?</p>
       <p>All variants share the frozen backbone, input projections, learned query, patch readout, training data, loss, optimizer, and deterministic conversion from a heatmap to a box. We choose the conversion threshold once on validation, then keep it fixed for every held-out evaluation.</p>
-      <p><a href="https://github.com/TarunTomar122/attention-is-all-you-need-for-vlms/blob/main/docs/backbone.md">Why SigLIP 2</a> · <a href="https://github.com/TarunTomar122/attention-is-all-you-need-for-vlms/blob/main/paper/method.md">Method contract</a> · <a href="https://github.com/TarunTomar122/attention-is-all-you-need-for-vlms/blob/main/research-docs/frozen_evaluation_protocol.md">Evaluation protocol</a></p>
+      <p><a href="https://github.com/TarunTomar122/visual-grounding-decoder-study/blob/main/docs/backbone.md">Why SigLIP 2</a> · <a href="https://github.com/TarunTomar122/visual-grounding-decoder-study/blob/main/paper/method.md">Method contract</a> · <a href="https://github.com/TarunTomar122/visual-grounding-decoder-study/blob/main/research-docs/frozen_evaluation_protocol.md">Evaluation protocol</a></p>
     </section>
 
     <section id="benchmarks">
@@ -74,7 +75,7 @@
         </table>
       </div>
       <p>For each test image, A4 and S4 are compared as a pair across three random seeds. We then resample images 10,000 times to estimate how stable the difference is, rather than treating multiple expressions from the same image as independent evidence.</p>
-      <p><a href="https://github.com/TarunTomar122/attention-is-all-you-need-for-vlms/blob/main/research-docs/dataset_card.md">Dataset card</a> · <a href="https://github.com/TarunTomar122/attention-is-all-you-need-for-vlms/blob/main/docs/datasets.md">Dataset composition</a></p>
+      <p><a href="https://github.com/TarunTomar122/visual-grounding-decoder-study/blob/main/research-docs/dataset_card.md">Dataset card</a> · <a href="https://github.com/TarunTomar122/visual-grounding-decoder-study/blob/main/docs/datasets.md">Dataset composition</a></p>
     </section>
 
     <section id="results">
@@ -103,7 +104,7 @@
         <img src="assets/generated-efficiency-summary.png" alt="Trainable decoder parameters and cached decoder latency for A4, S4, and A8.">
         <figcaption>A4 removes 44.4% of S4's trainable decoder parameters and reduces cached-decoder latency by 10.1%.</figcaption>
       </figure>
-      <p><a href="https://github.com/TarunTomar122/attention-is-all-you-need-for-vlms/tree/main/docs/results">Detailed result artifacts</a> · <a href="https://github.com/TarunTomar122/attention-is-all-you-need-for-vlms/tree/main/paper/figures">Paper figures</a></p>
+      <p><a href="https://github.com/TarunTomar122/visual-grounding-decoder-study/tree/main/docs/results">Detailed result artifacts</a> · <a href="https://github.com/TarunTomar122/visual-grounding-decoder-study/tree/main/paper/figures">Paper figures</a></p>
     </section>
 
     <section id="takeaway">
@@ -112,11 +113,23 @@
       <p class="scope">Scope: this study changes the trainable grounding decoder, not the pretrained backbone. It predicts one box from a 24 × 24 patch heatmap, so it is a focused result about decoder capacity allocation.</p>
       <h3>Inspect the evidence</h3>
       <ul>
-        <li><a href="https://github.com/TarunTomar122/attention-is-all-you-need-for-vlms/blob/main/paper/main.pdf">Paper PDF</a></li>
-        <li><a href="https://github.com/TarunTomar122/attention-is-all-you-need-for-vlms/blob/main/results/README.md">Result index</a></li>
-        <li><a href="https://github.com/TarunTomar122/attention-is-all-you-need-for-vlms/blob/main/paper/claims-and-limitations.md">Claims and limitations</a></li>
-        <li><a href="https://github.com/TarunTomar122/attention-is-all-you-need-for-vlms/blob/main/CITATION.cff">Citation metadata</a></li>
+        <li><a href="https://github.com/TarunTomar122/visual-grounding-decoder-study/blob/main/paper/main.pdf">Full paper PDF</a></li>
+        <li><a href="https://github.com/TarunTomar122/visual-grounding-decoder-study/blob/main/results/README.md">Result index</a></li>
+        <li><a href="https://github.com/TarunTomar122/visual-grounding-decoder-study/blob/main/paper/claims-and-limitations.md">Claims and limitations</a></li>
+        <li><a href="https://github.com/TarunTomar122/visual-grounding-decoder-study/blob/main/CITATION.cff">Citation metadata</a></li>
       </ul>
+    </section>
+
+    <section id="submission">
+      <h2>ICPRS 2027 submission</h2>
+      <p>We prepared a compact, anonymous IEEE conference-format version for the IEEE International Conference on Pattern Recognition Systems. It is three pages total—two body pages plus one references page—within the venue’s six-page paper plus one-page references limit.</p>
+      <div class="submission-card">
+        <strong>What is ready</strong>
+        <span>Anonymous PDF, IEEEtran source, figures, and reproducible build commands.</span>
+        <a href="https://github.com/TarunTomar122/visual-grounding-decoder-study/tree/main/paper/icprs">Open the ICPRS package</a>
+      </div>
+      <p>The manuscript intentionally has no author name, affiliation, GitHub link, or identifying PDF metadata for double-blind review. Enter the real author list only in ConfTool. Choose <strong>Regular Student Paper</strong> if the first author is officially registered as a student at submission; otherwise choose <strong>Regular Paper</strong>.</p>
+      <p><a href="https://icprs.org/index.html">ICPRS 2027 call and deadlines</a> · <a href="https://github.com/TarunTomar122/visual-grounding-decoder-study/blob/main/paper/icprs/README.md">Submission checklist</a></p>
     </section>
   </main>
 

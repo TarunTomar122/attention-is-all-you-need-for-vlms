@@ -2,7 +2,7 @@
 
 **A controlled study over frozen vision-language features**
 
-[Paper PDF](paper/main.pdf) | [Research website](https://taruntomar122.github.io/attention-is-all-you-need-for-vlms/) | [LaTeX source](paper/main.tex) | [Final status](research-docs/current_status.md)
+[Full paper PDF](paper/main.pdf) | [ICPRS paper](paper/icprs/main.pdf) | [Research website](https://taruntomar122.github.io/visual-grounding-decoder-study/) | [LaTeX source](paper/main.tex) | [Final status](research-docs/current_status.md)
 
 This repository studies a narrow question: once a pretrained VLM has already encoded image and language context, can a small trainable grounding decoder omit token-wise feed-forward networks (FFNs) without losing its ability to localize a referred object?
 
@@ -75,6 +75,22 @@ A4 removes 44.4% of S4's trainable decoder parameters and reduces cached-decoder
 
 ![FineCops difficulty](docs/assets/generated-finecops-difficulty.png)
 
+## ICPRS 2027 Adaptation
+
+The repository now includes an anonymous IEEEtran version for the IEEE International Conference
+on Pattern Recognition Systems. It renders as three pages total—two body pages and one references
+page—within the venue's six-page paper plus one-page reference limit. The compact version removes
+author identity, affiliations, public repository links, and identifying PDF metadata for double-blind
+review.
+
+- [Anonymous ICPRS PDF](paper/icprs/main.pdf)
+- [ICPRS source and submission checklist](paper/icprs/README.md)
+- [ICPRS 2027 call and deadlines](https://icprs.org/index.html)
+
+When submitting through ConfTool, enter the real author list in the form. Select **Regular Student
+Paper** only if the first author is officially registered as a student at submission; otherwise
+select **Regular Paper**.
+
 ## Reproduce the Paper Assets
 
 No GPU or model download is required. The command reads committed result artifacts and regenerates the paper table, PNG/PDF/SVG figures, machine-readable evidence manifest, static-site assets, and rendered review PDF.
@@ -92,6 +108,8 @@ For submission-source packaging:
     make overleaf-package
     make arxiv-package
     make arxiv-preflight
+    make icprs-pdf
+    make icprs-package
 
 arxiv-preflight verifies archive contents, citations, inclusion paths, and source hygiene. A final clean TeX compilation remains a human-submission step on a machine with a complete TeX installation.
 
